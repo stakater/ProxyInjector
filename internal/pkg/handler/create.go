@@ -21,11 +21,11 @@ type patchValue struct {
 	Op    string `json:"op"`
 	Path  string `json:"path"`
 	Value struct {
-		Name  string `json:"name"`
-		Image string `json:"image"`
+		Name         string `json:"name"`
+		Image        string `json:"image"`
 		VolumeMounts struct {
-			Name          string `json:"name"`
-			MountPath     string `json:"mountPath"`
+			Name      string `json:"name"`
+			MountPath string `json:"mountPath"`
 		}
 	}
 }
@@ -56,9 +56,9 @@ func (r ResourceCreatedHandler) Handle() error {
 				Name:  "proxy",
 				Image: "quay.io/gambol99/keycloak-proxy:v2.1.1",
 				VolumeMounts: {
-					Name: "keycloak-proxy-config",
-					MountPath: "/etc/config"
-				}
+					Name:      "keycloak-proxy-config",
+					MountPath: "/etc/config",
+				},
 			},
 		}}
 
