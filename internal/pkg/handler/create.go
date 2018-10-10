@@ -2,7 +2,6 @@ package handler
 
 import (
 	logger "github.com/sirupsen/logrus"
-	"github.com/stakater/ProxyInjector/pkg/kube"
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
 	"github.com/stakater/ProxyInjector/internal/pkg/constants"
 )
@@ -19,9 +18,10 @@ func (r ResourceCreatedHandler) Handle() error {
 	} else {
 		logger.Info("Resource created")
 		//client, err := kube.GetClient()
-		annotations := callbacks.GetPodDeploymentAnnotations
+		annotations := callbacks.GetDeploymentAnnotations(r.Resource)
 		value := annotations[constants.AuthProxyUpstreamAnnotation]
-		logger(value)
+		logger.Info(value)
+
 	}
 	return nil
 }

@@ -9,7 +9,7 @@ func GetDeploymentAnnotations(resource interface{}) map[string]string {
 	return resource.(*v1beta1.Deployment).GetAnnotations()
 }
 
-// GetDeploymentPods returns the pods of given deployment
-func GetDeploymentPods(item interface{}) []v1.Pod {
-	return item.(v1beta1.Deployment).Spec.Template
+// GetDeploymentContainers returns the containers of given deployment
+func GetDeploymentContainers(item interface{}) []v1.Container {
+	return item.(v1beta1.Deployment).Spec.Template.Spec.Containers
 }
