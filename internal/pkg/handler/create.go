@@ -23,10 +23,9 @@ type patchValue struct {
 	Value struct {
 		Name  string `json:"name"`
 		Image string `json:"image"`
-		Ports struct {
+		VolumeMounts struct {
 			Name          string `json:"name"`
-			Protocol      string `json:"protocol"`
-			ContainerPort uint32 `json:"value"`
+			MountPath     string `json:"mountPath"`
 		}
 	}
 }
@@ -54,18 +53,17 @@ func (r ResourceCreatedHandler) Handle() error {
 			Op:   "merge",
 			Path: "/spec/template/spec/containers",
 			Value: {
-				Name:  "web",
-				Image: "nginx:1.12",
-				Ports: {
-					Name:          "http",
-					Protocol:      v1.ProtocolTCP,
-					ContainerPort: 80,
-				},
+				Name:  "proxy",
+				Image: "quay.io/gambol99/keycloak-proxy:v2.1.1",
+				VolumeMounts: {
+					Name: "keycloak-proxy-config",
+					MountPath: "/etc/config"
+				}
 			},
 		}}
 
 		payloadBytes, _ := json.Marshal(payload)
-		_, err := r.Resource.(*v1beta1.Deployment).Patch(replicasetName, types.JSONPatchType, payloadBytes)
+		_, err := r.Resource.(*v1beta1.Deployment).Patch(r.Resource.(*v1beta1.Deployment).name, types.JSONPatchType, payloadBytes)
 		return err
 
 		/*			&v1.Container{
