@@ -26,10 +26,27 @@ type Container struct {
 	VolumeMounts ContainerVolumes `json: "volumeMounts"`
 }
 
-type patch struct {
+/*type patch struct {
 	Op    string    `json:"op"`
 	Path  string    `json:"path"`
 	Value Container `json: "value"`
+}*/
+
+
+type Spec2 struct {
+	Containers []Container `json:"containers"`
+}
+
+type Template struct {
+	Spec Spec2 `json:"spec"`
+}
+
+type Spec1 struct {
+	Tmpl Template `json:"template"`
+}
+
+type patch struct {
+	Spec Spec1 `json:"spec"`
 }
 
 // Handle processes the newly created resource
@@ -48,7 +65,7 @@ func (r ResourceCreatedHandler) Handle() error {
 		if value != "" {
 
 			logger.Infof("Updating deployment ... %s", name)
-			payload := []patch{{
+			/*payload := patch{
 				Op:   "add",
 				Path: "/spec/template/spec/containers",
 				Value: Container{
@@ -59,12 +76,50 @@ func (r ResourceCreatedHandler) Handle() error {
 						MountPath: "/etc/config",
 					},
 				},
-			}}
+			}*/
+
+			/*payload := Container{
+				Name:  "proxy",
+				Image: "quay.io/gambol99/keycloak-proxy:v2.1.1",
+				VolumeMounts: ContainerVolumes{
+					Name:      "keycloak-proxy-config",
+					MountPath: "/etc/config",
+				},
+			}*/
+
+			payload := patch{
+				Spec: Spec1{
+					Tmpl: Template{
+						Spec: Spec2{
+							Containers: []Container{{
+								Name:  "proxy",
+								Image: "quay.io/gambol99/keycloak-proxy:v2.1.1",
+								VolumeMounts: ContainerVolumes{
+									Name:      "keycloak-proxy-config",
+									MountPath: "/etc/config",
+								},
+							}},
+						},
+					},
+				},
+			}
 
 			client, err := kube.GetClient()
-			if err == nil {
-				payloadBytes, _ := json.Marshal(payload)
-				client.AppsV1beta1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+			if err == nil
+				payloadBytes, err3 := json.Marshal(payload)
+				//deployment, err2 := client.ExtensionsV1beta1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, valueBytes,"/spec/template/spec/containers")
+
+				if err3 == nil {
+					deployment, err2 := client.ExtensionsV1beta1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+
+					if err2 == nil {
+						logger.Infof("Updated deployment... %s", callbacks.GetDeploymentName(deployment))
+					} else {
+						logger.Error(err2)
+					}
+				} else {
+					logger.Error(err3)
+				}
 			} else {
 				logger.Error(err)
 			}
@@ -82,7 +137,6 @@ func (r ResourceCreatedHandler) Handle() error {
 						}
 			*/
 
-			logger.Info("Updated deployment...")
 		}
 	}
 	return nil
