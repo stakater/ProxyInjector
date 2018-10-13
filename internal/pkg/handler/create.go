@@ -32,7 +32,6 @@ type Container struct {
 	Value Container `json: "value"`
 }*/
 
-
 type Spec2 struct {
 	Containers []Container `json:"containers"`
 }
@@ -105,7 +104,7 @@ func (r ResourceCreatedHandler) Handle() error {
 			}
 
 			client, err := kube.GetClient()
-			if err == nil
+			if err == nil {
 				payloadBytes, err3 := json.Marshal(payload)
 				//deployment, err2 := client.ExtensionsV1beta1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, valueBytes,"/spec/template/spec/containers")
 
