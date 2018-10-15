@@ -53,7 +53,7 @@ type Volume struct {
 }
 
 type ConfigMap struct {
-	Name string `json:"configMap"`
+	Name string `json:"name"`
 }
 
 // Handle processes the newly created resource
@@ -61,7 +61,7 @@ func (r ResourceCreatedHandler) Handle() error {
 	if r.Resource == nil {
 		logger.Errorf("Resource creation handler received nil resource")
 	} else {
-		logger.Info("Resource created")
+		logger.Infof("Resource created: %+v", r.Resource)
 		name := callbacks.GetDeploymentName(r.Resource)
 		namespace := callbacks.GetDeploymentNamespace(r.Resource)
 		annotations := callbacks.GetDeploymentAnnotations(r.Resource)
@@ -79,11 +79,11 @@ func (r ResourceCreatedHandler) Handle() error {
 				"--redirection-url=" + annotations[constants.RedirectionUrlAnnotation],
 			}
 
-			if annotations[constants.EnableAuthorizationAnnotation] == "\"false\"" {
-				logger.Info("authproxy.stakater.com/enable-authorization-header =" + annotations[constants.EnableAuthorizationAnnotation])
-				containerArgs = append(containerArgs, "--enable-authorization-header=\"false\"")
+			if annotations[constants.EnableAuthorizationAnnotation] == "false" {
+				logger.Info("authproxy.stakater.com/enable-authorization-header = " + annotations[constants.EnableAuthorizationAnnotation])
+				containerArgs = append(containerArgs, "--enable-authorization-header=false")
 			} else {
-				logger.Info("authproxy.stakater.com/enable-authorization-header !=" + annotations[constants.EnableAuthorizationAnnotation])
+				logger.Info("authproxy.stakater.com/enable-authorization-header != " + annotations[constants.EnableAuthorizationAnnotation])
 				containerArgs = append(containerArgs,
 					"--upstream-response-header-timeout="+annotations[constants.ResponseHeaderTimeoutAnnotation],
 					"--upstream-timeout="+annotations[constants.TimeoutAnnotation],
@@ -98,7 +98,7 @@ func (r ResourceCreatedHandler) Handle() error {
 						Spec: Spec2{
 							Containers: []Container{{
 								Name:  "proxy",
-								Image: "\"" + annotations[constants.ImageNameAnnotation] + ":" + annotations[constants.ImageTagAnnotation] + "\"",
+								Image: annotations[constants.ImageNameAnnotation] + ":" + annotations[constants.ImageTagAnnotation],
 								Args:  containerArgs,
 								VolumeMounts: []ContainerVolumes{{
 									Name:      "keycloak-proxy-config",
