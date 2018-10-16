@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	logger "github.com/sirupsen/logrus"
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
 	"github.com/stakater/ProxyInjector/internal/pkg/constants"
@@ -61,13 +62,10 @@ func (r ResourceCreatedHandler) Handle() error {
 	if r.Resource == nil {
 		logger.Errorf("Resource creation handler received nil resource")
 	} else {
-		logger.Infof("Resource created: %+v", r.Resource)
 		name := callbacks.GetDeploymentName(r.Resource)
 		namespace := callbacks.GetDeploymentNamespace(r.Resource)
 		annotations := callbacks.GetDeploymentAnnotations(r.Resource)
 		value := annotations[constants.ImageNameAnnotation]
-
-		logger.Info(value)
 
 		if value != "" {
 
@@ -121,10 +119,24 @@ func (r ResourceCreatedHandler) Handle() error {
 				payloadBytes, err3 := json.Marshal(payload)
 
 				if err3 == nil {
-					deployment, err2 := client.ExtensionsV1beta1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+
+					var err2 error
+					logger.Info("checking resource type and updating...")
+					if callbacks.IsDeployment(r.Resource) {
+						logger.Info("resource is a deployment")
+						_, err2 = client.ExtensionsV1beta1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+					} else if callbacks.IsDeamonset(r.Resource) {
+						logger.Info("resource is a daemonset")
+						_, err2 = client.AppsV1beta2().DaemonSets(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+					} else if callbacks.IsStatefulset(r.Resource) {
+						logger.Info("resource is a statefulset")
+						_, err2 = client.AppsV1beta2().StatefulSets(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+					} else {
+						return errors.New("unexpected resource type")
+					}
 
 					if err2 == nil {
-						logger.Infof("Updated deployment... %s", callbacks.GetDeploymentName(deployment))
+						logger.Infof("Updated deployment... %s", name)
 					} else {
 						logger.Error(err2)
 					}
