@@ -7,8 +7,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: 0.0.4
-    chart: "proxyinjector-0.0.4"
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -20,8 +20,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: 0.0.4
-    chart: "proxyinjector-0.0.4"
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role
@@ -50,8 +50,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: 0.0.4
-    chart: "proxyinjector-0.0.4"
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role-binding
@@ -77,8 +77,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: 0.0.4
-    chart: "proxyinjector-0.0.4"
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -99,7 +99,7 @@ spec:
     spec:
       containers:
       - env:
-        image: "stakater/proxyinjector:0.0.4"
+        image: "stakater/proxyinjector:0.0.1"
         imagePullPolicy: Always
         name: proxyinjector
       serviceAccountName: proxyinjector
