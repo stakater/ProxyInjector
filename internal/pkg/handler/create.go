@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 	logger "github.com/sirupsen/logrus"
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
+	"github.com/stakater/ProxyInjector/internal/pkg/config"
 	"github.com/stakater/ProxyInjector/internal/pkg/constants"
 	"github.com/stakater/ProxyInjector/pkg/kube"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,6 +18,8 @@ import (
 // ResourceCreatedHandler contains new objects
 type ResourceCreatedHandler struct {
 	Resource interface{}
+	Config   config.Config
+	//Config   string
 }
 
 type ContainerVolumes struct {
@@ -65,18 +68,37 @@ func (r ResourceCreatedHandler) Handle() error {
 		name := callbacks.GetDeploymentName(r.Resource)
 		namespace := callbacks.GetDeploymentNamespace(r.Resource)
 		annotations := callbacks.GetDeploymentAnnotations(r.Resource)
-		value := annotations[constants.ImageNameAnnotation]
 
-		if value != "" {
+		if annotations[constants.EnabledAnnotation] == "true" {
 
 			logger.Infof("Updating deployment ... %s", name)
 
+			// TODO Handle config fields through map, rather than struct
 			containerArgs := []string{
+				"--client-id=" + Config.ClientId,
+				"--client-secret=" + Config.ClientSecret,
+				"--discovery-url=" + Config.DiscoveryUrl,
+				"--enable-default-deny=" + Config.EnableDefaultDeny,
+				"--listen=" + Config.Listen,
+				"--secure-cookie=" + Config.SecureCookie,
+				"--verbose=" + Config.Verbose,
+				"--enable-logging=" + Config.EnableLogging,
 				"--config=" + annotations[constants.ConfigAnnotation],
 				"--upstream-url=" + annotations[constants.UpstreamUrlAnnotation],
 				"--redirection-url=" + annotations[constants.RedirectionUrlAnnotation],
 			}
 
+			for _, origin := range Config.CorsOrigins {
+				containerArgs = append(containerArgs, "--cors-origins="+origin)
+			}
+			for _, method := range Config.CorsMethods {
+				containerArgs = append(containerArgs, "--cors-methods="+method)
+			}
+			for _, resource := range Config.Resources {
+				containerArgs = append(containerArgs, "--resources=\"uri="+resource.URI+"\"")
+			}
+
+			// TODO Handle annotations dynamically instead of being hardcoded
 			if annotations[constants.EnableAuthorizationAnnotation] == "false" {
 				logger.Info("authproxy.stakater.com/enable-authorization-header = " + annotations[constants.EnableAuthorizationAnnotation])
 				containerArgs = append(containerArgs, "--enable-authorization-header=false")
@@ -98,17 +120,17 @@ func (r ResourceCreatedHandler) Handle() error {
 								Name:  "proxy",
 								Image: annotations[constants.ImageNameAnnotation] + ":" + annotations[constants.ImageTagAnnotation],
 								Args:  containerArgs,
-								VolumeMounts: []ContainerVolumes{{
-									Name:      "keycloak-proxy-config",
-									MountPath: "/etc/config",
-								}},
+								/*								VolumeMounts: []ContainerVolumes{{
+																Name:      "keycloak-proxy-config",
+																MountPath: "/etc/config",
+															}},*/
 							}},
-							Volumes: []Volume{{
-								Name: "keycloak-proxy-config",
-								ConfigMap: ConfigMap{
-									Name: "keycloak-proxy",
-								},
-							}},
+							/*							Volumes: []Volume{{
+														Name: "keycloak-proxy-config",
+														ConfigMap: ConfigMap{
+															Name: "keycloak-proxy",
+														},
+													}},*/
 						},
 					},
 				},

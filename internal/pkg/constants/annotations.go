@@ -1,6 +1,8 @@
 package constants
 
 const (
+	EnabledAnnotation = "authproxy.stakater.com/enabled"
+
 	SourceServiceNameAnnotation = "authproxy.stakater.com/source-service-name"
 
 	ImageNameAnnotation       = "authproxy.stakater.com/image-name"

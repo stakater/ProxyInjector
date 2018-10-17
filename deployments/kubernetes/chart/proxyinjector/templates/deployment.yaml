@@ -27,5 +27,12 @@ spec:
         image: "{{ .Values.proxyinjector.image.name }}:{{ .Values.proxyinjector.image.tag }}"
         imagePullPolicy: {{ .Values.proxyinjector.image.pullPolicy }}
         name: {{ template "proxyinjector-name" . }}
+        volumeMounts:
+          - mountPath: /etc/ProxyInjector
+          name: config-volume
       serviceAccountName: {{ template "proxyinjector-name" . }}
+      volumes:
+      - configMap:
+          name: {{ template "name" . }}
+        name: config-volume
               

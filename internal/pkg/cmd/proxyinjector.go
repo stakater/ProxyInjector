@@ -5,6 +5,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/stakater/ProxyInjector/internal/pkg/config"
 	"github.com/stakater/ProxyInjector/internal/pkg/controller"
 	"github.com/stakater/ProxyInjector/pkg/kube"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -34,8 +35,10 @@ func startProxyInjector(cmd *cobra.Command, args []string) {
 		logrus.Fatal(err)
 	}
 
-	for k := range kube.ResourceMap {
-		c, err := controller.NewController(clientset, k, currentNamespace)
+	config := config.GetControllerConfig()
+
+	for resource := range kube.ResourceMap {
+		c, err := controller.NewController(clientset, resource, config, currentNamespace)
 		if err != nil {
 			logrus.Fatalf("%s", err)
 		}

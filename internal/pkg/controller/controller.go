@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
+	"github.com/stakater/ProxyInjector/internal/pkg/config"
 	"github.com/stakater/ProxyInjector/internal/pkg/handler"
 	"github.com/stakater/ProxyInjector/pkg/kube"
 	"k8s.io/apimachinery/pkg/fields"
@@ -17,20 +18,23 @@ import (
 
 // Controller for checking events
 type Controller struct {
-	client    kubernetes.Interface
-	indexer   cache.Indexer
-	queue     workqueue.RateLimitingInterface
-	informer  cache.Controller
+	client   kubernetes.Interface
+	indexer  cache.Indexer
+	queue    workqueue.RateLimitingInterface
+	informer cache.Controller
+	config   config.Config
+	//config    string
 	namespace string
 }
 
 // NewController for initializing a Controller
 func NewController(
-	client kubernetes.Interface, resource string, namespace string) (*Controller, error) {
+	client kubernetes.Interface, resource string, config string, namespace string) (*Controller, error) {
 
 	c := Controller{
 		client:    client,
 		namespace: namespace,
+		config:    config,
 	}
 
 	queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
@@ -50,6 +54,7 @@ func NewController(
 func (c *Controller) Add(obj interface{}) {
 	c.queue.Add(handler.ResourceCreatedHandler{
 		Resource: obj,
+		Config:   c.config,
 	})
 }
 

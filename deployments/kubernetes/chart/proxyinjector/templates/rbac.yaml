@@ -18,21 +18,17 @@ metadata:
 rules:
   - apiGroups:
       - ""
-    verbs:
-      - list
-      - get
-      - watch
-  - apiGroups:
-      - ""
       - "extensions"
       - "apps"
     resources:
       - deployments
       - daemonsets
       - statefulsets
+      - services
     verbs:
       - list
       - get
+      - watch
       - update
       - patch
 ---
@@ -64,21 +60,17 @@ metadata:
 rules:
   - apiGroups:
       - ""
-    verbs:
-      - list
-      - get
-      - watch
-  - apiGroups:
-      - ""
       - "extensions"
       - "apps"
     resources:
       - deployments
       - daemonsets
       - statefulsets
+      - services
     verbs:
       - list
       - get
+      - watch
       - update
       - patch
 ---
