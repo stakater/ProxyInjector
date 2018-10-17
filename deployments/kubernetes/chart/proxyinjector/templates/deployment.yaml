@@ -29,10 +29,10 @@ spec:
         name: {{ template "proxyinjector-name" . }}
         volumeMounts:
           - mountPath: /etc/ProxyInjector
-          name: config-volume
+            name: config-volume
       serviceAccountName: {{ template "proxyinjector-name" . }}
       volumes:
       - configMap:
-          name: {{ template "name" . }}
+          name: {{ template "proxyinjector-name" . }}
         name: config-volume
               

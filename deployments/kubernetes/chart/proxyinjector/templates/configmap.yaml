@@ -2,31 +2,36 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-{{ include "labels.stakater" . | indent 6 }}
-{{ include "labels.chart" . | indent 6 }}
+    app: {{ template "proxyinjector-name" . }}
+    version: {{ .Chart.Version }}
+    group: {{ .Values.proxyinjector.labels.group }}
+    provider: {{ .Values.proxyinjector.labels.provider }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
   annotations:
     expose.service-key.config.fabric8.io/keycloak: keycloak.url
   name: keycloak-proxy
 data:
   keycloak.url: http://keycloak.tools
   {{- with .Values.keycloakProxyConfigmap.config }}
-      config.yml: |-
-        client-id: {{ .clientId }}
-        client-secret: {{ .clientSecret }}
-        discovery-url: {{ .discoveryUrl }}
-        enable-default-deny: {{ .enableDefaultDeny }}
-        listen: {{ .listen }}
-        secure-cookie: {{ .secureCookie }}
-        verbose: {{ .verbose }}
-        enable-logging: {{ .enableLogging }}
-        cors-origins:
-        {{- range .corsOrigins }}
-        - {{ . | quote }}
-        {{- end }}
-        cors-methods:
-        {{- range .corsMethods }}
-        - {{ . }}
-        {{- end }}
-        resources:
-        - uri: {{ .resourceUri }}
+  config.yml: |-
+    client-id: {{ .clientId }}
+    client-secret: {{ .clientSecret }}
+    discovery-url: {{ .discoveryUrl }}
+    enable-default-deny: {{ .enableDefaultDeny }}
+    listen: {{ .listen }}
+    secure-cookie: {{ .secureCookie }}
+    verbose: {{ .verbose }}
+    enable-logging: {{ .enableLogging }}
+    cors-origins:
+    {{- range .corsOrigins }}
+    - {{ . | quote }}
     {{- end }}
+    cors-methods:
+    {{- range .corsMethods }}
+    - {{ . }}
+    {{- end }}
+    resources:
+    - uri: {{ .resourceUri }}
+{{- end }}
