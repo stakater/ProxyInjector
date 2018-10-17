@@ -75,26 +75,26 @@ func (r ResourceCreatedHandler) Handle() error {
 
 			// TODO Handle config fields through map, rather than struct
 			containerArgs := []string{
-				"--client-id=" + Config.ClientId,
-				"--client-secret=" + Config.ClientSecret,
-				"--discovery-url=" + Config.DiscoveryUrl,
-				"--enable-default-deny=" + Config.EnableDefaultDeny,
-				"--listen=" + Config.Listen,
-				"--secure-cookie=" + Config.SecureCookie,
-				"--verbose=" + Config.Verbose,
-				"--enable-logging=" + Config.EnableLogging,
+				"--client-id=" + r.Config.ClientId,
+				"--client-secret=" + r.Config.ClientSecret,
+				"--discovery-url=" + r.Config.DiscoveryUrl,
+				"--enable-default-deny=" + r.Config.EnableDefaultDeny,
+				"--listen=" + r.Config.Listen,
+				"--secure-cookie=" + r.Config.SecureCookie,
+				"--verbose=" + r.Config.Verbose,
+				"--enable-logging=" + r.Config.EnableLogging,
 				"--config=" + annotations[constants.ConfigAnnotation],
 				"--upstream-url=" + annotations[constants.UpstreamUrlAnnotation],
 				"--redirection-url=" + annotations[constants.RedirectionUrlAnnotation],
 			}
 
-			for _, origin := range Config.CorsOrigins {
+			for _, origin := range r.Config.CorsOrigins {
 				containerArgs = append(containerArgs, "--cors-origins="+origin)
 			}
-			for _, method := range Config.CorsMethods {
+			for _, method := range r.Config.CorsMethods {
 				containerArgs = append(containerArgs, "--cors-methods="+method)
 			}
-			for _, resource := range Config.Resources {
+			for _, resource := range r.Config.Resources {
 				containerArgs = append(containerArgs, "--resources=\"uri="+resource.URI+"\"")
 			}
 

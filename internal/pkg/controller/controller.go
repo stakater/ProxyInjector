@@ -29,7 +29,7 @@ type Controller struct {
 
 // NewController for initializing a Controller
 func NewController(
-	client kubernetes.Interface, resource string, config string, namespace string) (*Controller, error) {
+	client kubernetes.Interface, resource string, config config.Config, namespace string) (*Controller, error) {
 
 	c := Controller{
 		client:    client,
