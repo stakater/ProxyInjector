@@ -13,7 +13,7 @@ proxyinjector:
     tag: "0.0.1"
     pullPolicy: IfNotPresent
   watchGlobally: true
-  configFilePath: /etc/ProxyInjector/config.yaml
+  configFilePath: /etc/ProxyInjector
 keycloakProxyConfigmap:
   labels:
     provider: stakater

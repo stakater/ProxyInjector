@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/stakater/ProxyInjector/internal/pkg/config"
 	"github.com/stakater/ProxyInjector/internal/pkg/handler"
 	"github.com/stakater/ProxyInjector/pkg/kube"
 	"k8s.io/apimachinery/pkg/fields"
@@ -18,18 +17,17 @@ import (
 
 // Controller for checking events
 type Controller struct {
-	client   kubernetes.Interface
-	indexer  cache.Indexer
-	queue    workqueue.RateLimitingInterface
-	informer cache.Controller
-	config   config.Config
-	//config    string
+	client    kubernetes.Interface
+	indexer   cache.Indexer
+	queue     workqueue.RateLimitingInterface
+	informer  cache.Controller
+	config    map[string]string
 	namespace string
 }
 
 // NewController for initializing a Controller
 func NewController(
-	client kubernetes.Interface, resource string, config config.Config, namespace string) (*Controller, error) {
+	client kubernetes.Interface, resource string, config map[string]string, namespace string) (*Controller, error) {
 
 	c := Controller{
 		client:    client,
@@ -54,7 +52,6 @@ func NewController(
 func (c *Controller) Add(obj interface{}) {
 	c.queue.Add(handler.ResourceCreatedHandler{
 		Resource: obj,
-		Config:   c.config,
 	})
 }
 
@@ -105,7 +102,7 @@ func (c *Controller) processNextItem() bool {
 	defer c.queue.Done(resourceHandler)
 
 	// Invoke the method containing the business logic
-	err := resourceHandler.(handler.ResourceHandler).Handle()
+	err := resourceHandler.(handler.ResourceHandler).Handle(c.config)
 	// Handle the error if something went wrong during the execution of the business logic
 	c.handleErr(err, resourceHandler)
 	return true

@@ -18,6 +18,8 @@ spec:
     spec:
       containers:
       - env:
+        - name: CONFIG_FILE_PATH
+          value: "{{ .Values.proxyinjector.configFilePath }}/config.yml"
       {{- if eq .Values.proxyinjector.watchGlobally false }}
         - name: KUBERNETES_NAMESPACE
           valueFrom:
@@ -28,7 +30,7 @@ spec:
         imagePullPolicy: {{ .Values.proxyinjector.image.pullPolicy }}
         name: {{ template "proxyinjector-name" . }}
         volumeMounts:
-          - mountPath: /etc/ProxyInjector
+          - mountPath: {{ .Values.proxyinjector.configFilePath }}
             name: config-volume
       serviceAccountName: {{ template "proxyinjector-name" . }}
       volumes:

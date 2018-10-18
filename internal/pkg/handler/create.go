@@ -6,9 +6,9 @@ import (
 	"github.com/pkg/errors"
 	logger "github.com/sirupsen/logrus"
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
-	"github.com/stakater/ProxyInjector/internal/pkg/config"
 	"github.com/stakater/ProxyInjector/internal/pkg/constants"
 	"github.com/stakater/ProxyInjector/pkg/kube"
+	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -17,9 +17,7 @@ import (
 
 // ResourceCreatedHandler contains new objects
 type ResourceCreatedHandler struct {
-	Resource interface{}
-	Config   config.Config
-	//Config   string
+	Resource interface{} `json:"resource"`
 }
 
 type ContainerVolumes struct {
@@ -61,7 +59,7 @@ type ConfigMap struct {
 }
 
 // Handle processes the newly created resource
-func (r ResourceCreatedHandler) Handle() error {
+func (r ResourceCreatedHandler) Handle(config map[string]string) error {
 	if r.Resource == nil {
 		logger.Errorf("Resource creation handler received nil resource")
 	} else {
@@ -71,31 +69,24 @@ func (r ResourceCreatedHandler) Handle() error {
 
 		if annotations[constants.EnabledAnnotation] == "true" {
 
+			client, err := kube.GetClient()
+
+			configmap := &v1.ConfigMap{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "keycloak-proxy",
+				},
+				Data: config,
+			}
+
+			_, cmerr := client.CoreV1().ConfigMaps(namespace).Create(configmap)
+			logger.Errorf("Error creating configmap: %v", cmerr)
+
 			logger.Infof("Updating deployment ... %s", name)
 
-			// TODO Handle config fields through map, rather than struct
 			containerArgs := []string{
-				"--client-id=" + r.Config.ClientId,
-				"--client-secret=" + r.Config.ClientSecret,
-				"--discovery-url=" + r.Config.DiscoveryUrl,
-				"--enable-default-deny=" + r.Config.EnableDefaultDeny,
-				"--listen=" + r.Config.Listen,
-				"--secure-cookie=" + r.Config.SecureCookie,
-				"--verbose=" + r.Config.Verbose,
-				"--enable-logging=" + r.Config.EnableLogging,
 				"--config=" + annotations[constants.ConfigAnnotation],
 				"--upstream-url=" + annotations[constants.UpstreamUrlAnnotation],
 				"--redirection-url=" + annotations[constants.RedirectionUrlAnnotation],
-			}
-
-			for _, origin := range r.Config.CorsOrigins {
-				containerArgs = append(containerArgs, "--cors-origins="+origin)
-			}
-			for _, method := range r.Config.CorsMethods {
-				containerArgs = append(containerArgs, "--cors-methods="+method)
-			}
-			for _, resource := range r.Config.Resources {
-				containerArgs = append(containerArgs, "--resources=\"uri="+resource.URI+"\"")
 			}
 
 			// TODO Handle annotations dynamically instead of being hardcoded
@@ -120,23 +111,22 @@ func (r ResourceCreatedHandler) Handle() error {
 								Name:  "proxy",
 								Image: annotations[constants.ImageNameAnnotation] + ":" + annotations[constants.ImageTagAnnotation],
 								Args:  containerArgs,
-								/*								VolumeMounts: []ContainerVolumes{{
-																Name:      "keycloak-proxy-config",
-																MountPath: "/etc/config",
-															}},*/
+								VolumeMounts: []ContainerVolumes{{
+									Name:      "keycloak-proxy-config",
+									MountPath: "/etc/config",
+								}},
 							}},
-							/*							Volumes: []Volume{{
-														Name: "keycloak-proxy-config",
-														ConfigMap: ConfigMap{
-															Name: "keycloak-proxy",
-														},
-													}},*/
+							Volumes: []Volume{{
+								Name: "keycloak-proxy-config",
+								ConfigMap: ConfigMap{
+									Name: "keycloak-proxy",
+								},
+							}},
 						},
 					},
 				},
 			}
 
-			client, err := kube.GetClient()
 			if err == nil {
 				payloadBytes, err3 := json.Marshal(payload)
 

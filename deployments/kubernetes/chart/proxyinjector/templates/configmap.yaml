@@ -11,7 +11,7 @@ metadata:
     heritage: {{ .Release.Service | quote }}
   annotations:
     expose.service-key.config.fabric8.io/keycloak: keycloak.url
-  name: keycloak-proxy
+  name: {{ template "proxyinjector-name" . }}
 data:
   keycloak.url: http://keycloak.tools
   {{- with .Values.keycloakProxyConfigmap.config }}
