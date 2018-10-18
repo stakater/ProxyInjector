@@ -4,12 +4,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-
-	"gopkg.in/yaml.v2"
 )
 
-func ReadConfig(filePath string) map[string]string {
-	var config map[string]string
+func ReadConfig(filePath string) string {
 	// Read YML
 	log.Println("Reading YAML Configuration")
 	source, err := ioutil.ReadFile(filePath)
@@ -17,16 +14,10 @@ func ReadConfig(filePath string) map[string]string {
 		log.Panic(err)
 	}
 
-	// Unmarshall
-	err = yaml.Unmarshal(source, &config)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	return config
+	return string(source)
 }
 
-func GetControllerConfig() map[string]string {
+func GetControllerConfig() string {
 	configFilePath := os.Getenv("CONFIG_FILE_PATH")
 	if len(configFilePath) == 0 {
 		configFilePath = "config.yaml"

@@ -59,7 +59,7 @@ type ConfigMap struct {
 }
 
 // Handle processes the newly created resource
-func (r ResourceCreatedHandler) Handle(config map[string]string) error {
+func (r ResourceCreatedHandler) Handle(config string) error {
 	if r.Resource == nil {
 		logger.Errorf("Resource creation handler received nil resource")
 	} else {
@@ -75,7 +75,9 @@ func (r ResourceCreatedHandler) Handle(config map[string]string) error {
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "keycloak-proxy",
 				},
-				Data: config,
+				Data: map[string]string{
+					"config.yml": config,
+				},
 			}
 
 			_, cmerr := client.CoreV1().ConfigMaps(namespace).Create(configmap)
@@ -84,23 +86,13 @@ func (r ResourceCreatedHandler) Handle(config map[string]string) error {
 			logger.Infof("Updating deployment ... %s", name)
 
 			containerArgs := []string{
-				"--config=" + annotations[constants.ConfigAnnotation],
-				"--upstream-url=" + annotations[constants.UpstreamUrlAnnotation],
-				"--redirection-url=" + annotations[constants.RedirectionUrlAnnotation],
+				"--config=/etc/config/config.yml",
 			}
 
-			// TODO Handle annotations dynamically instead of being hardcoded
-			if annotations[constants.EnableAuthorizationAnnotation] == "false" {
-				logger.Info("authproxy.stakater.com/enable-authorization-header = " + annotations[constants.EnableAuthorizationAnnotation])
-				containerArgs = append(containerArgs, "--enable-authorization-header=false")
-			} else {
-				logger.Info("authproxy.stakater.com/enable-authorization-header != " + annotations[constants.EnableAuthorizationAnnotation])
-				containerArgs = append(containerArgs,
-					"--upstream-response-header-timeout="+annotations[constants.ResponseHeaderTimeoutAnnotation],
-					"--upstream-timeout="+annotations[constants.TimeoutAnnotation],
-					"--upstream-keepalive-timeout"+annotations[constants.KeepaliveTimeoutAnnotation],
-					"--server-read-timeout"+annotations[constants.ServerReadTimeoutAnnotation],
-					"--server-write-timeout"+annotations[constants.ServerWriteTimeoutAnnotation])
+			for _, arg := range constants.KeycloakArgs {
+				if annotations[constants.AnnotationPrefix+arg] != "" {
+					containerArgs = append(containerArgs, "--"+arg+"="+annotations[constants.AnnotationPrefix+arg])
+				}
 			}
 
 			payload := patch{

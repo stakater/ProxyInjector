@@ -21,13 +21,13 @@ type Controller struct {
 	indexer   cache.Indexer
 	queue     workqueue.RateLimitingInterface
 	informer  cache.Controller
-	config    map[string]string
+	config    string
 	namespace string
 }
 
 // NewController for initializing a Controller
 func NewController(
-	client kubernetes.Interface, resource string, config map[string]string, namespace string) (*Controller, error) {
+	client kubernetes.Interface, resource string, config string, namespace string) (*Controller, error) {
 
 	c := Controller{
 		client:    client,

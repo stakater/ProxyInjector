@@ -25,11 +25,13 @@ rules:
       - daemonsets
       - statefulsets
       - services
+      - configmaps
     verbs:
       - list
       - get
       - watch
       - update
+      - create
       - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -67,11 +69,13 @@ rules:
       - daemonsets
       - statefulsets
       - services
+      - configmaps
     verbs:
       - list
       - get
       - watch
       - update
+      - create
       - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
