@@ -33,5 +33,8 @@ data:
     - {{ . }}
     {{- end }}
     resources:
-    - uri: {{ .resourceUri }}
-{{- end }}
+    {{- range $key, $value := index .resources 0}}
+    - {{$key}}:{{$value | quote}}
+    {{- end}}
+
+  {{- end }}
