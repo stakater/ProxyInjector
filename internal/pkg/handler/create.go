@@ -8,7 +8,6 @@ import (
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
 	"github.com/stakater/ProxyInjector/internal/pkg/constants"
 	"github.com/stakater/ProxyInjector/pkg/kube"
-	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -59,7 +58,7 @@ type ConfigMap struct {
 }
 
 // Handle processes the newly created resource
-func (r ResourceCreatedHandler) Handle(config string) error {
+func (r ResourceCreatedHandler) Handle(conf config.Config) error {
 	if r.Resource == nil {
 		logger.Errorf("Resource creation handler received nil resource")
 	} else {
@@ -71,7 +70,7 @@ func (r ResourceCreatedHandler) Handle(config string) error {
 
 			client, err := kube.GetClient()
 
-			configmap := &v1.ConfigMap{
+			/*configmap := &v1.ConfigMap{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "keycloak-proxy",
 				},
@@ -81,7 +80,7 @@ func (r ResourceCreatedHandler) Handle(config string) error {
 			}
 
 			_, cmerr := client.CoreV1().ConfigMaps(namespace).Create(configmap)
-			logger.Errorf("Error creating configmap: %v", cmerr)
+			logger.Errorf("Error creating configmap: %v", cmerr)*/
 
 			logger.Infof("Updating deployment ... %s", name)
 
@@ -103,17 +102,17 @@ func (r ResourceCreatedHandler) Handle(config string) error {
 								Name:  "proxy",
 								Image: annotations[constants.ImageNameAnnotation] + ":" + annotations[constants.ImageTagAnnotation],
 								Args:  containerArgs,
-								VolumeMounts: []ContainerVolumes{{
+								/*VolumeMounts: []ContainerVolumes{{
 									Name:      "keycloak-proxy-config",
 									MountPath: "/etc/config",
-								}},
+								}},*/
 							}},
-							Volumes: []Volume{{
+							/*Volumes: []Volume{{
 								Name: "keycloak-proxy-config",
 								ConfigMap: ConfigMap{
 									Name: "keycloak-proxy",
 								},
-							}},
+							}},*/
 						},
 					},
 				},

@@ -9,11 +9,8 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     release: {{ .Release.Name | quote }}
     heritage: {{ .Release.Service | quote }}
-  annotations:
-    expose.service-key.config.fabric8.io/keycloak: keycloak.url
   name: {{ template "proxyinjector-name" . }}
 data:
-  keycloak.url: http://keycloak.tools
   {{- with .Values.keycloakProxyConfigmap.config }}
   config.yml: |-
     client-id: {{ .clientId }}
@@ -34,7 +31,7 @@ data:
     {{- end }}
     resources:
     {{- range $key, $value := index .resources 0}}
-    - {{$key}}:{{$value | quote}}
+    - {{$key}}: {{$value | quote}}
     {{- end}}
 
   {{- end }}
