@@ -1,7 +1,6 @@
 package config
 
 import (
-	logger "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -101,9 +100,6 @@ func structToStringArray(config Config) []string {
 		}
 		configArgs = append(configArgs, "--resources="+res)
 	}
-	configArgs = append(configArgs, "--verbose")
-
-	logger.Infof("Parsed config args: %q", configArgs)
 
 	return configArgs
 }

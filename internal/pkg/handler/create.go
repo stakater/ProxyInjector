@@ -63,8 +63,6 @@ func (r ResourceCreatedHandler) Handle(conf []string) error {
 				}
 			}
 
-			logger.Infof("Passing container args: %q", containerArgs)
-
 			payload := patch{
 				Spec: Spec1{
 					Tmpl: Template{
@@ -101,8 +99,7 @@ func (r ResourceCreatedHandler) Handle(conf []string) error {
 
 					if err2 == nil {
 						logger.Infof("Updated deployment... %s", name)
-						deployment, _ := client.ExtensionsV1beta1().Deployments(namespace).Get(name, metav1.GetOptions{})
-						logger.Infof("Patched container has args: %q", deployment.Spec.Template.Spec.Containers[0].Args)
+						client.ExtensionsV1beta1().Deployments(namespace).Get(name, metav1.GetOptions{})
 					} else {
 						logger.Error(err2)
 					}
