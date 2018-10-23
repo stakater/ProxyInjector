@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/pkg/errors"
 	logger "github.com/sirupsen/logrus"
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
@@ -19,21 +18,14 @@ type ResourceCreatedHandler struct {
 	Resource interface{} `json:"resource"`
 }
 
-type ContainerVolumes struct {
-	Name      string `json:"name"`
-	MountPath string `json:"mountPath"`
-}
-
 type Container struct {
-	Name         string             `json:"name"`
-	Image        string             `json:"image"`
-	Args         []string           `json:"args"`
-	VolumeMounts []ContainerVolumes `json:"volumeMounts"`
+	Name  string   `json:"name"`
+	Image string   `json:"image"`
+	Args  []string `json:"args"`
 }
 
 type Spec2 struct {
 	Containers []Container `json:"containers"`
-	Volumes    []Volume    `json:"volumes"`
 }
 
 type Template struct {
@@ -48,17 +40,8 @@ type patch struct {
 	Spec Spec1 `json:"spec"`
 }
 
-type Volume struct {
-	Name      string    `json:"name"`
-	ConfigMap ConfigMap `json:"configMap"`
-}
-
-type ConfigMap struct {
-	Name string `json:"name"`
-}
-
 // Handle processes the newly created resource
-func (r ResourceCreatedHandler) Handle(conf config.Config) error {
+func (r ResourceCreatedHandler) Handle(conf []string) error {
 	if r.Resource == nil {
 		logger.Errorf("Resource creation handler received nil resource")
 	} else {
@@ -70,29 +53,17 @@ func (r ResourceCreatedHandler) Handle(conf config.Config) error {
 
 			client, err := kube.GetClient()
 
-			/*configmap := &v1.ConfigMap{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "keycloak-proxy",
-				},
-				Data: map[string]string{
-					"config.yml": config,
-				},
-			}
-
-			_, cmerr := client.CoreV1().ConfigMaps(namespace).Create(configmap)
-			logger.Errorf("Error creating configmap: %v", cmerr)*/
-
 			logger.Infof("Updating deployment ... %s", name)
 
-			containerArgs := []string{
-				"--config=/etc/config/config.yml",
-			}
+			containerArgs := conf
 
 			for _, arg := range constants.KeycloakArgs {
 				if annotations[constants.AnnotationPrefix+arg] != "" {
 					containerArgs = append(containerArgs, "--"+arg+"="+annotations[constants.AnnotationPrefix+arg])
 				}
 			}
+
+			logger.Infof("Passing container args: %q", containerArgs)
 
 			payload := patch{
 				Spec: Spec1{
@@ -102,17 +73,7 @@ func (r ResourceCreatedHandler) Handle(conf config.Config) error {
 								Name:  "proxy",
 								Image: annotations[constants.ImageNameAnnotation] + ":" + annotations[constants.ImageTagAnnotation],
 								Args:  containerArgs,
-								/*VolumeMounts: []ContainerVolumes{{
-									Name:      "keycloak-proxy-config",
-									MountPath: "/etc/config",
-								}},*/
 							}},
-							/*Volumes: []Volume{{
-								Name: "keycloak-proxy-config",
-								ConfigMap: ConfigMap{
-									Name: "keycloak-proxy",
-								},
-							}},*/
 						},
 					},
 				},
@@ -140,6 +101,8 @@ func (r ResourceCreatedHandler) Handle(conf config.Config) error {
 
 					if err2 == nil {
 						logger.Infof("Updated deployment... %s", name)
+						deployment, _ := client.ExtensionsV1beta1().Deployments(namespace).Get(name, metav1.GetOptions{})
+						logger.Infof("Patched container has args: %q", deployment.Spec.Template.Spec.Containers[0].Args)
 					} else {
 						logger.Error(err2)
 					}
@@ -148,7 +111,7 @@ func (r ResourceCreatedHandler) Handle(conf config.Config) error {
 						// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
 						result, getErr := client.CoreV1().Services(namespace).Get(annotations[constants.SourceServiceNameAnnotation], metav1.GetOptions{})
 						if getErr != nil {
-							panic(fmt.Errorf("Failed to get latest version of Service: %v", getErr))
+							logger.Errorf("Failed to get latest version of Service: %v", getErr)
 						}
 
 						result.Spec.Ports[0].TargetPort = intstr.FromInt(80)
@@ -159,7 +122,7 @@ func (r ResourceCreatedHandler) Handle(conf config.Config) error {
 					if retryErr == nil {
 						logger.Infof("Updated service... %s", annotations[constants.SourceServiceNameAnnotation])
 					} else {
-						panic(fmt.Errorf("Update failed: %v", retryErr))
+						logger.Errorf("Update failed: %v", retryErr)
 					}
 
 				} else {
