@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/pkg/errors"
+	"errors"
 	logger "github.com/sirupsen/logrus"
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
 	"github.com/stakater/ProxyInjector/internal/pkg/constants"
