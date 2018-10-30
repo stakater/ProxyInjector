@@ -111,7 +111,11 @@ func (r ResourceCreatedHandler) Handle(conf []string) error {
 							logger.Errorf("Failed to get latest version of Service: %v", getErr)
 						}
 
-						result.Spec.Ports[0].TargetPort = intstr.FromInt(80)
+						if annotations[constants.TargetPortAnnotation] == "" {
+							result.Spec.Ports[0].TargetPort = intstr.FromInt(80)
+						} else {
+							result.Spec.Ports[0].TargetPort = intstr.FromString(annotations[constants.TargetPortAnnotation])
+						}
 						_, updateErr := client.CoreV1().Services(namespace).Update(result)
 						return updateErr
 					})

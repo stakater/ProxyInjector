@@ -7,6 +7,7 @@ const (
 	ImageNameAnnotation         = "authproxy.stakater.com/image-name"
 	ImageTagAnnotation          = "authproxy.stakater.com/image-tag"
 	ImagePullPolicyAnnotation   = "authproxy.stakater.com/image-pull-policy"
+	TargetPortAnnotation        = "authproxy.stakater.com/target-port"
 )
 
 var KeycloakArgs = []string{
