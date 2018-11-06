@@ -12,6 +12,7 @@ metadata:
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
+  namespace: default
 spec:
   replicas: 1
   revisionHistoryLimit: 2
@@ -29,8 +30,17 @@ spec:
     spec:
       containers:
       - env:
+        - name: CONFIG_FILE_PATH
+          value: "/etc/ProxyInjector/config.yml"
         image: "stakater/proxyinjector:0.0.1"
         imagePullPolicy: IfNotPresent
         name: proxyinjector
+        volumeMounts:
+          - mountPath: /etc/ProxyInjector
+            name: config-volume
       serviceAccountName: proxyinjector
+      volumes:
+      - configMap:
+          name: proxyinjector
+        name: config-volume
               

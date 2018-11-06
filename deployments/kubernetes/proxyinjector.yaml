@@ -1,0 +1,238 @@
+---
+# Source: proxyinjector/templates/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector-role
+  namespace: test-proxyinjector
+rules:
+- apiGroups:
+  - ""
+  - "extensions"
+  - "apps"
+  resources:
+  - deployments
+  - daemonsets
+  - statefulsets
+  - services
+  verbs:
+  - list
+  - get
+  - watch
+  - update
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector-role-binding
+  namespace: test-proxyinjector
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: proxyinjector-role
+subjects:
+- kind: ServiceAccount
+  name: proxyinjector
+  namespace: test-proxyinjector
+
+
+
+
+---
+# Source: proxyinjector/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: proxyinjector
+      group: com.stakater.platform
+      provider: stakater
+  template:
+    metadata:
+      labels:
+        app: proxyinjector
+        group: com.stakater.platform
+        provider: stakater
+    spec:
+      containers:
+      - env:
+        image: "stakater/proxyinjector:0.0.1"
+        imagePullPolicy: Always
+        name: proxyinjector
+      serviceAccountName: proxyinjector
+
+---
+# Source: proxyinjector/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: proxyinjector
+      group: com.stakater.platform
+      provider: stakater
+  template:
+    metadata:
+      labels:
+        app: proxyinjector
+        group: com.stakater.platform
+        provider: stakater
+    spec:
+      containers:
+      - env:
+        - name: CONFIG_FILE_PATH
+          value: "/etc/ProxyInjector/config.yml"
+        image: "stakater/proxyinjector:0.0.1"
+        imagePullPolicy: IfNotPresent
+        name: proxyinjector
+        volumeMounts:
+          - mountPath: /etc/ProxyInjector
+            name: config-volume
+      serviceAccountName: proxyinjector
+      volumes:
+      - configMap:
+          name: proxyinjector
+        name: config-volume
+              
+---
+# Source: proxyinjector/templates/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels: 
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector-role
+  namespace: default
+rules:
+  - apiGroups:
+      - ""
+      - "extensions"
+      - "apps"
+    resources:
+      - deployments
+      - daemonsets
+      - statefulsets
+      - services
+      - configmaps
+    verbs:
+      - list
+      - get
+      - watch
+      - update
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels: 
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector-role-binding
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: proxyinjector-role
+subjects:
+  - kind: ServiceAccount
+    name: proxyinjector
+    namespace: default
+---
+# Source: proxyinjector/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: proxyinjector
+    version: 0.0.1
+    group: com.stakater.platform
+    provider: stakater
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector
+data:
+  config.yml:
+    null
+    

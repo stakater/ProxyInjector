@@ -25,31 +25,24 @@ metadata:
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role
-  namespace: test-proxyinjector
+  namespace: default
 rules:
-  - apiGroups:
-      - ""
-    resources:      
-      - secrets
-      - configmaps
-    verbs:
-      - list
-      - get
-      - watch
   - apiGroups:
       - ""
       - "extensions"
       - "apps"
     resources:
-      - pods
-      - services
       - deployments
       - daemonsets
       - statefulsets
+      - services
+      - configmaps
     verbs:
       - list
       - get
+      - watch
       - update
+      - create
       - patch
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -64,7 +57,7 @@ metadata:
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role-binding
-  namespace: test-proxyinjector
+  namespace: default
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -72,4 +65,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: proxyinjector
-    namespace: test-proxyinjector
+    namespace: default

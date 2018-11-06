@@ -1,9 +1,7 @@
-# Generated from deployments/kubernetes/templates/chart/Chart.yaml.tmpl
-
 apiVersion: v1
-name: proxyInjector
-description: Proxy Injector chart that runs on kubernetes
-version: 0.0.16
+name: proxyinjector
+description: ProxyInjector chart that runs on kubernetes
+version: 0.0.1
 keywords:
   - Proxy
   - Authentication
