@@ -1,0 +1,31 @@
+kubernetes:
+  host: https://kubernetes.default
+
+proxyinjector:
+  labels:
+    provider: stakater
+    group: com.stakater.platform
+    version: {{ getenv "VERSION" }}
+  image:
+    name: {{ getenv "DOCKER_IMAGE" }}
+    tag: "{{ getenv "VERSION" }}"
+    pullPolicy: IfNotPresent
+  watchGlobally: true
+  configFilePath: /etc/ProxyInjector
+keycloakProxyConfigmap:
+  labels:
+    provider: stakater
+    group: com.stakater.platform
+    version: {{ getenv "VERSION" }}
+  config:
+    clientId:
+    clientSecret:
+    discoveryUrl:
+    enableDefaultDeny:
+    listen:
+    secureCookie:
+    verbose:
+    enableLogging:
+    corsOrigins:
+    corsMethods:
+    resourceUri:

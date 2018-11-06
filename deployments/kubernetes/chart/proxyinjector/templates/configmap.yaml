@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "proxyinjector-name" . }}
+    version: {{ .Chart.Version }}
+    group: {{ .Values.proxyinjector.labels.group }}
+    provider: {{ .Values.proxyinjector.labels.provider }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: {{ .Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+  name: {{ template "proxyinjector-name" . }}
+data:
+  config.yml:
+{{ toYaml .Values.proxyinjector.proxyconfig | indent 4 }}

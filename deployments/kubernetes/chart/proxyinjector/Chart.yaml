@@ -1,0 +1,14 @@
+# Generated from deployments/kubernetes/templates/chart/Chart.yaml.tmpl
+
+apiVersion: v1
+name: proxyInjector
+description: Proxy Injector chart that runs on kubernetes
+version: 0.0.16
+keywords:
+  - Proxy
+  - Authentication
+  - kubernetes
+home: https://github.com/stakater/ProxyInjector
+maintainers:
+- name: Stakater
+  email: hello@stakater.com

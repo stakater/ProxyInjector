@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+{{ include "proxyinjector-labels.stakater" . | indent 4 }}
+{{ include "proxyinjector-labels.chart" . | indent 4 }}
+  name: {{ template "proxyinjector-name" . }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+{{ include "proxyinjector-labels.selector" . | indent 6 }}
+  template:
+    metadata:
+      labels:
+{{ include "proxyinjector-labels.selector" . | indent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: CONFIG_FILE_PATH
+          value: "{{ .Values.proxyinjector.configFilePath }}/config.yml"
+      {{- if eq .Values.proxyinjector.watchGlobally false }}
+        - name: KUBERNETES_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+      {{- end }}
+        image: "{{ .Values.proxyinjector.image.name }}:{{ .Values.proxyinjector.image.tag }}"
+        imagePullPolicy: {{ .Values.proxyinjector.image.pullPolicy }}
+        name: {{ template "proxyinjector-name" . }}
+        volumeMounts:
+          - mountPath: {{ .Values.proxyinjector.configFilePath }}
+            name: config-volume
+      serviceAccountName: {{ template "proxyinjector-name" . }}
+      volumes:
+      - configMap:
+          name: {{ template "proxyinjector-name" . }}
+        name: config-volume
+              

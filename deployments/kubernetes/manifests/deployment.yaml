@@ -1,0 +1,36 @@
+---
+# Source: proxyinjector/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: proxyinjector
+      group: com.stakater.platform
+      provider: stakater
+  template:
+    metadata:
+      labels:
+        app: proxyinjector
+        group: com.stakater.platform
+        provider: stakater
+    spec:
+      containers:
+      - env:
+        image: "stakater/proxyinjector:0.0.1"
+        imagePullPolicy: IfNotPresent
+        name: proxyinjector
+      serviceAccountName: proxyinjector
+              
