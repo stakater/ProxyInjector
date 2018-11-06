@@ -15,11 +15,10 @@ proxyinjector:
   watchGlobally: true
   configFilePath: /etc/ProxyInjector
   proxyconfig: |-
-    enableDefaultDeny: true
-    listen: 0.0.0.0:80
-    secureCookie: false
+    enable-default-deny: true
+    secure-cookie: false
     verbose: true
-    enableLogging: true
+    enable-logging: true
     cors-origins:
     - '*'
     cors-methods:
