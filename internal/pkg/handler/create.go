@@ -10,6 +10,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/retry"
 )
 
@@ -18,42 +19,52 @@ type ResourceCreatedHandler struct {
 	Resource interface{} `json:"resource"`
 }
 
+type patch struct {
+	Spec struct {
+		Template struct {
+			Spec struct {
+				Containers []Container `json:"containers"`
+			} `json:"spec"`
+		} `json:"template"`
+	} `json:"spec"`
+}
+
 type Container struct {
 	Name  string   `json:"name"`
 	Image string   `json:"image"`
 	Args  []string `json:"args"`
 }
 
-type Spec2 struct {
-	Containers []Container `json:"containers"`
-}
-
-type Template struct {
-	Spec Spec2 `json:"spec"`
-}
-
-type Spec1 struct {
-	Tmpl Template `json:"template"`
-}
-
-type patch struct {
-	Spec Spec1 `json:"spec"`
-}
-
 // Handle processes the newly created resource
-func (r ResourceCreatedHandler) Handle(conf []string) error {
+func (r ResourceCreatedHandler) Handle(conf []string, resourceType string) error {
 	if r.Resource == nil {
 		logger.Errorf("Resource creation handler received nil resource")
 	} else {
-		name := callbacks.GetDeploymentName(r.Resource)
-		namespace := callbacks.GetDeploymentNamespace(r.Resource)
-		annotations := callbacks.GetDeploymentAnnotations(r.Resource)
+
+		var name string
+		var namespace string
+		var annotations map[string]string
+
+		if resourceType == "deployments" {
+			name = callbacks.GetDeploymentName(r.Resource)
+			namespace = callbacks.GetDeploymentNamespace(r.Resource)
+			annotations = callbacks.GetDeploymentAnnotations(r.Resource)
+		} else if resourceType == "daemonsets" {
+			name = callbacks.GetDaemonsetName(r.Resource)
+			namespace = callbacks.GetDaemonsetNamespace(r.Resource)
+			annotations = callbacks.GetDaemonsetAnnotations(r.Resource)
+		} else if resourceType == "statefulsets" {
+			name = callbacks.GetStatefulsetName(r.Resource)
+			namespace = callbacks.GetStatefulsetNamespace(r.Resource)
+			annotations = callbacks.GetStatefulsetAnnotations(r.Resource)
+		}
+		logger.Infof("Resource creation handler checking resource %s of type %s in namespace %s", name, resourceType, namespace)
 
 		if annotations[constants.EnabledAnnotation] == "true" {
 
 			client, err := kube.GetClient()
 
-			logger.Infof("Updating deployment ... %s", name)
+			logger.Infof("Updating resource ... %s", name)
 
 			containerArgs := conf
 
@@ -63,68 +74,33 @@ func (r ResourceCreatedHandler) Handle(conf []string) error {
 				}
 			}
 
-			payload := patch{
-				Spec: Spec1{
-					Tmpl: Template{
-						Spec: Spec2{
-							Containers: []Container{{
-								Name:  "proxy",
-								Image: annotations[constants.ImageNameAnnotation] + ":" + annotations[constants.ImageTagAnnotation],
-								Args:  containerArgs,
-							}},
-						},
-					},
-				},
-			}
-
 			if err == nil {
-				payloadBytes, err3 := json.Marshal(payload)
+				payloadBytes, err3 := getPatch(containerArgs, annotations[constants.ImageNameAnnotation]+":"+annotations[constants.ImageTagAnnotation])
 
 				if err3 == nil {
 
 					var err2 error
 					logger.Info("checking resource type and updating...")
-					if callbacks.IsDeployment(r.Resource) {
-						logger.Info("resource is a deployment")
+					if resourceType == "deployments" {
+						logger.Info("patching deployment")
 						_, err2 = client.ExtensionsV1beta1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
-					} else if callbacks.IsDeamonset(r.Resource) {
-						logger.Info("resource is a daemonset")
+					} else if resourceType == "daemonsets" {
+						logger.Info("patching daemonset")
 						_, err2 = client.AppsV1beta2().DaemonSets(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
-					} else if callbacks.IsStatefulset(r.Resource) {
-						logger.Info("resource is a statefulset")
+					} else if resourceType == "statefulsets" {
+						logger.Info("patching statefulset")
 						_, err2 = client.AppsV1beta2().StatefulSets(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
 					} else {
 						return errors.New("unexpected resource type")
 					}
 
 					if err2 == nil {
-						logger.Infof("Updated deployment... %s", name)
-						client.ExtensionsV1beta1().Deployments(namespace).Get(name, metav1.GetOptions{})
+						logger.Infof("Updated resource... %s", name)
 					} else {
 						logger.Error(err2)
 					}
 
-					retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
-						// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
-						result, getErr := client.CoreV1().Services(namespace).Get(annotations[constants.SourceServiceNameAnnotation], metav1.GetOptions{})
-						if getErr != nil {
-							logger.Errorf("Failed to get latest version of Service: %v", getErr)
-						}
-
-						if annotations[constants.TargetPortAnnotation] == "" {
-							result.Spec.Ports[0].TargetPort = intstr.FromInt(80)
-						} else {
-							result.Spec.Ports[0].TargetPort = intstr.FromString(annotations[constants.TargetPortAnnotation])
-						}
-						_, updateErr := client.CoreV1().Services(namespace).Update(result)
-						return updateErr
-					})
-
-					if retryErr == nil {
-						logger.Infof("Updated service... %s", annotations[constants.SourceServiceNameAnnotation])
-					} else {
-						logger.Errorf("Update failed: %v", retryErr)
-					}
+					updateService(client, namespace, annotations[constants.SourceServiceNameAnnotation], annotations[constants.TargetPortAnnotation])
 
 				} else {
 					logger.Error(err3)
@@ -136,4 +112,41 @@ func (r ResourceCreatedHandler) Handle(conf []string) error {
 		}
 	}
 	return nil
+}
+
+func getPatch(containerArgs []string, image string) ([]byte, error) {
+
+	payload := &patch{}
+	payload.Spec.Template.Spec.Containers = []Container{{
+		Name:  "proxy",
+		Image: image,
+		Args:  containerArgs,
+	}}
+
+	return json.Marshal(payload)
+}
+
+func updateService(client *kubernetes.Clientset, namespace string, service string, port string) {
+
+	retryErr := retry.RetryOnConflict(retry.DefaultRetry, func() error {
+		// RetryOnConflict uses exponential backoff to avoid exhausting the apiserver
+		result, getErr := client.CoreV1().Services(namespace).Get(service, metav1.GetOptions{})
+		if getErr != nil {
+			logger.Errorf("Failed to get latest version of Service: %v", getErr)
+		}
+
+		if port == "" {
+			result.Spec.Ports[0].TargetPort = intstr.FromInt(80)
+		} else {
+			result.Spec.Ports[0].TargetPort = intstr.FromString(port)
+		}
+		_, updateErr := client.CoreV1().Services(namespace).Update(result)
+		return updateErr
+	})
+
+	if retryErr == nil {
+		logger.Infof("Updated service... %s", service)
+	} else {
+		logger.Errorf("Update failed: %v", retryErr)
+	}
 }

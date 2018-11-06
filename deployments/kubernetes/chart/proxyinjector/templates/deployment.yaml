@@ -5,6 +5,7 @@ metadata:
 {{ include "proxyinjector-labels.stakater" . | indent 4 }}
 {{ include "proxyinjector-labels.chart" . | indent 4 }}
   name: {{ template "proxyinjector-name" . }}
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   revisionHistoryLimit: 2

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	logger "github.com/sirupsen/logrus"
 	"github.com/stakater/ProxyInjector/internal/pkg/handler"
 	"github.com/stakater/ProxyInjector/pkg/kube"
 	"k8s.io/apimachinery/pkg/fields"
@@ -23,6 +23,7 @@ type Controller struct {
 	informer  cache.Controller
 	cfg       []string
 	namespace string
+	res       string
 }
 
 // NewController for initializing a Controller
@@ -33,14 +34,14 @@ func NewController(
 		client:    client,
 		namespace: namespace,
 		cfg:       conf,
+		res:       resource,
 	}
 
 	queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
 	listWatcher := cache.NewListWatchFromClient(client.ExtensionsV1beta1().RESTClient(), resource, namespace, fields.Everything())
 
 	indexer, informer := cache.NewIndexerInformer(listWatcher, kube.ResourceMap[resource], 0, cache.ResourceEventHandlerFuncs{
-		AddFunc:    c.Add,
-		DeleteFunc: c.Delete,
+		AddFunc: c.Add,
 	}, cache.Indexers{})
 	c.indexer = indexer
 	c.informer = informer
@@ -55,15 +56,10 @@ func (c *Controller) Add(obj interface{}) {
 	})
 }
 
-// Delete function to add an object to the queue in case of deleting a resource
-func (c *Controller) Delete(old interface{}) {
-	logrus.Infof("Resource deletion has been detected but no further implementation found to take action")
-}
-
 //Run function for controller which handles the queue
 func (c *Controller) Run(threadiness int, stopCh chan struct{}) {
 
-	logrus.Infof("Starting Controller")
+	logger.Infof("Starting Controller")
 	defer runtime.HandleCrash()
 
 	// Let the workers stop when we are done
@@ -82,7 +78,7 @@ func (c *Controller) Run(threadiness int, stopCh chan struct{}) {
 	}
 
 	<-stopCh
-	logrus.Infof("Stopping Controller")
+	logger.Infof("Stopping Controller")
 }
 
 func (c *Controller) runWorker() {
@@ -94,6 +90,7 @@ func (c *Controller) processNextItem() bool {
 	// Wait until there is a new item in the working queue
 	resourceHandler, quit := c.queue.Get()
 	if quit {
+		logger.Info("quit")
 		return false
 	}
 	// Tell the queue that we are done with processing this key. This unblocks the key for other workers
@@ -102,7 +99,7 @@ func (c *Controller) processNextItem() bool {
 	defer c.queue.Done(resourceHandler)
 
 	// Invoke the method containing the business logic
-	err := resourceHandler.(handler.ResourceHandler).Handle(c.cfg)
+	err := resourceHandler.(handler.ResourceHandler).Handle(c.cfg, c.res)
 	// Handle the error if something went wrong during the execution of the business logic
 	c.handleErr(err, resourceHandler)
 	return true
@@ -120,7 +117,7 @@ func (c *Controller) handleErr(err error, key interface{}) {
 
 	// This controller retries 5 times if something goes wrong. After that, it stops trying.
 	if c.queue.NumRequeues(key) < 5 {
-		logrus.Errorf("Error syncing events %v: %v", key, err)
+		logger.Errorf("Error syncing events %v: %v", key, err)
 
 		// Re-enqueue the key rate limited. Based on the rate limiter on the
 		// queue and the re-enqueue history, the key will be processed later again.
@@ -131,5 +128,5 @@ func (c *Controller) handleErr(err error, key interface{}) {
 	c.queue.Forget(key)
 	// Report to an external entity that, even after several retries, we could not successfully process this key
 	runtime.HandleError(err)
-	logrus.Infof("Dropping the key %q out of the queue: %v", key, err)
+	logger.Infof("Dropping the key %q out of the queue: %v", key, err)
 }

@@ -11,27 +11,5 @@ metadata:
     heritage: {{ .Release.Service | quote }}
   name: {{ template "proxyinjector-name" . }}
 data:
-  {{- with .Values.keycloakProxyConfigmap.config }}
-  config.yml: |-
-    client-id: {{ .clientId }}
-    client-secret: {{ .clientSecret }}
-    discovery-url: {{ .discoveryUrl }}
-    enable-default-deny: {{ .enableDefaultDeny }}
-    listen: {{ .listen }}
-    secure-cookie: {{ .secureCookie }}
-    verbose: {{ .verbose }}
-    enable-logging: {{ .enableLogging }}
-    cors-origins:
-    {{- range .corsOrigins }}
-    - {{ . | quote }}
-    {{- end }}
-    cors-methods:
-    {{- range .corsMethods }}
-    - {{ . }}
-    {{- end }}
-    resources:
-    {{- range $key, $value := index .resources 0}}
-    - {{$key}}: {{$value | quote}}
-    {{- end}}
-
-  {{- end }}
+  config.yml:
+{{ toYaml .Values.proxyinjector.proxyconfig | indent 4 }}

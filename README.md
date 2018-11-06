@@ -44,6 +44,8 @@ The following quickstart let's you set up ProxyInjector:
     | resources     | list of resources to proxy uri, methods, roles          |
     | client-id     | client id used to authenticate to the oauth service     |
     | client-secret | client secret used to authenticate to the oauth service |
+
+The rest of the available options can be found at the [Keycloak Gatekeeper documentation](https://github.com/keycloak/keycloak-gatekeeper#keycloak-proxy)
  
 ## Help
 
