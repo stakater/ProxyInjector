@@ -5,6 +5,7 @@ import (
 	"errors"
 	logger "github.com/sirupsen/logrus"
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
+	"github.com/stakater/ProxyInjector/internal/pkg/config"
 	"github.com/stakater/ProxyInjector/internal/pkg/constants"
 	"github.com/stakater/ProxyInjector/pkg/kube"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -12,6 +13,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/retry"
+	"strings"
 )
 
 // ResourceCreatedHandler contains new objects
@@ -36,7 +38,7 @@ type Container struct {
 }
 
 // Handle processes the newly created resource
-func (r ResourceCreatedHandler) Handle(conf []string, resourceType string) error {
+func (r ResourceCreatedHandler) Handle(conf config.Config, resourceType string) error {
 	if r.Resource == nil {
 		logger.Errorf("Resource creation handler received nil resource")
 	} else {
@@ -66,7 +68,7 @@ func (r ResourceCreatedHandler) Handle(conf []string, resourceType string) error
 
 			logger.Infof("Updating resource ... %s", name)
 
-			containerArgs := conf
+			containerArgs := getConfigArgs(conf, annotations)
 
 			for _, arg := range constants.KeycloakArgs {
 				if annotations[constants.AnnotationPrefix+arg] != "" {
@@ -149,4 +151,55 @@ func updateService(client *kubernetes.Clientset, namespace string, service strin
 	} else {
 		logger.Errorf("Update failed: %v", retryErr)
 	}
+}
+
+func getConfigArgs(config config.Config, annotations map[string]string) []string {
+
+	configArgs := []string{}
+
+	//config from global proxy injector config is injected only if not overriden at the app level
+
+	if config.ClientId != "" && annotations[constants.AnnotationPrefix+"client-id"] == "" {
+		configArgs = append(configArgs, "--client-id="+config.ClientId)
+	}
+	if config.ClientSecret != "" && annotations[constants.AnnotationPrefix+"client-secret"] == "" {
+		configArgs = append(configArgs, "--client-secret="+config.ClientSecret)
+	}
+	if config.DiscoveryUrl != "" && annotations[constants.AnnotationPrefix+"discovery-url"] == "" {
+		configArgs = append(configArgs, "--discovery-url="+config.DiscoveryUrl)
+	}
+	/*if config.EnableDefaultDeny !="" && annotations[constants.AnnotationPrefix+"enable-default-deny"] == "" {
+		configArgs = append(configArgs, "--enable-default-deny="+config.EnableDefaultDeny)
+	}*/
+	if config.Listen != "" && annotations[constants.AnnotationPrefix+"listen"] == "" {
+		configArgs = append(configArgs, "--listen="+config.Listen)
+	}
+	if config.SecureCookie != "" && annotations[constants.AnnotationPrefix+"secure-cookie"] == "" {
+		configArgs = append(configArgs, "--secure-cookie="+config.SecureCookie)
+	}
+	if config.Verbose != "" && annotations[constants.AnnotationPrefix+"verbose"] == "" {
+		configArgs = append(configArgs, "--verbose="+config.Verbose)
+	}
+	if config.EnableLogging != "" && annotations[constants.AnnotationPrefix+"enable-logging"] == "" {
+		configArgs = append(configArgs, "--enable-logging="+config.EnableLogging)
+	}
+	for _, origin := range config.CorsOrigins {
+		configArgs = append(configArgs, "--cors-origins="+origin)
+	}
+	for _, method := range config.CorsMethods {
+		configArgs = append(configArgs, "--cors-methods="+method)
+	}
+	for _, resource := range config.Resources {
+		//  --resources "uri=/admin*|roles=admin,superuser|methods=POST,DELETE
+		res := ""
+		if resource.URI != "" {
+			res = "uri=" + resource.URI
+		}
+		if len(resource.Methods) != 0 {
+			res = res + "|methods=" + strings.Join(resource.Methods, ",")
+		}
+		configArgs = append(configArgs, "--resources="+res)
+	}
+
+	return configArgs
 }

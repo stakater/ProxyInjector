@@ -5,6 +5,7 @@ import (
 	"time"
 
 	logger "github.com/sirupsen/logrus"
+	"github.com/stakater/ProxyInjector/internal/pkg/config"
 	"github.com/stakater/ProxyInjector/internal/pkg/handler"
 	"github.com/stakater/ProxyInjector/pkg/kube"
 	"k8s.io/apimachinery/pkg/fields"
@@ -21,14 +22,14 @@ type Controller struct {
 	indexer   cache.Indexer
 	queue     workqueue.RateLimitingInterface
 	informer  cache.Controller
-	cfg       []string
+	cfg       config.Config
 	namespace string
 	res       string
 }
 
 // NewController for initializing a Controller
 func NewController(
-	client kubernetes.Interface, resource string, conf []string, namespace string) (*Controller, error) {
+	client kubernetes.Interface, resource string, conf config.Config, namespace string) (*Controller, error) {
 
 	c := Controller{
 		client:    client,
