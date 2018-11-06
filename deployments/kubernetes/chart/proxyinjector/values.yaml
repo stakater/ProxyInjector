@@ -1,5 +1,3 @@
-# Generated from deployments/kubernetes/templates/chart/values.yaml.tmpl
-
 kubernetes:
   host: https://kubernetes.default
 
@@ -14,16 +12,20 @@ proxyinjector:
     pullPolicy: IfNotPresent
   watchGlobally: true
   configFilePath: /etc/ProxyInjector
-  proxyconfig: |-
-    enableDefaultDeny: true
-    listen: 0.0.0.0:80
-    secureCookie: false
-    verbose: true
-    enableLogging: true
-    cors-origins:
-    - '*'
-    cors-methods:
-    - GET
-    - POST
-    resources:
-    - uri: '/'
+keycloakProxyConfigmap:
+  labels:
+    provider: stakater
+    group: com.stakater.platform
+    version: 0.0.1
+  config:
+    clientId:
+    clientSecret:
+    discoveryUrl:
+    enableDefaultDeny:
+    listen:
+    secureCookie:
+    verbose:
+    enableLogging:
+    corsOrigins:
+    corsMethods:
+    resourceUri:
