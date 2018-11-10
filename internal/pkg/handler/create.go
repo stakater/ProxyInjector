@@ -3,6 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"strings"
+
 	logger "github.com/sirupsen/logrus"
 	"github.com/stakater/ProxyInjector/internal/pkg/callbacks"
 	"github.com/stakater/ProxyInjector/internal/pkg/config"
@@ -13,7 +15,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/util/retry"
-	"strings"
 )
 
 // ResourceCreatedHandler contains new objects
@@ -140,7 +141,7 @@ func updateService(client *kubernetes.Clientset, namespace string, service strin
 		if port == "" {
 			result.Spec.Ports[0].TargetPort = intstr.FromInt(80)
 		} else {
-			result.Spec.Ports[0].TargetPort = intstr.FromString(port)
+			result.Spec.Ports[0].TargetPort = intstr.Parse(port)
 		}
 		_, updateErr := client.CoreV1().Services(namespace).Update(result)
 		return updateErr
