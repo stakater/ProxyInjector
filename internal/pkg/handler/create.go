@@ -73,6 +73,7 @@ func (r ResourceCreatedHandler) Handle(conf config.Config, resourceType string) 
 
 			for _, arg := range constants.KeycloakArgs {
 				if annotations[constants.AnnotationPrefix+arg] != "" {
+					containerArgs = removeIfExists(containerArgs, arg)
 					containerArgs = append(containerArgs, "--"+arg+"="+annotations[constants.AnnotationPrefix+arg])
 				}
 			}
@@ -115,6 +116,17 @@ func (r ResourceCreatedHandler) Handle(conf config.Config, resourceType string) 
 		}
 	}
 	return nil
+}
+
+func removeIfExists(containerArgs []string, arg string) []string {
+	i := 0 // output index
+	for _, containerArg := range containerArgs {
+		if !strings.Contains(containerArg, arg) {
+			containerArgs[i] = containerArg
+			i++
+		}
+	}
+	return containerArgs[:i]
 }
 
 func getPatch(containerArgs []string, image string) ([]byte, error) {
