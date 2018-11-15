@@ -42,7 +42,8 @@ func NewController(
 	listWatcher := cache.NewListWatchFromClient(client.ExtensionsV1beta1().RESTClient(), resource, namespace, fields.Everything())
 
 	indexer, informer := cache.NewIndexerInformer(listWatcher, kube.ResourceMap[resource], 0, cache.ResourceEventHandlerFuncs{
-		AddFunc: c.Add,
+		AddFunc:    c.Add,
+		UpdateFunc: c.Update,
 	}, cache.Indexers{})
 	c.indexer = indexer
 	c.informer = informer
@@ -54,6 +55,13 @@ func NewController(
 func (c *Controller) Add(obj interface{}) {
 	c.queue.Add(handler.ResourceCreatedHandler{
 		Resource: obj,
+	})
+}
+
+// Add function to add a new object to the queue in case of creating a resource
+func (c *Controller) Update(old interface{}, new interface{}) {
+	c.queue.Add(handler.ResourceCreatedHandler{
+		Resource: new,
 	})
 }
 
