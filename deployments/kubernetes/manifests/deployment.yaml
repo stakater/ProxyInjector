@@ -7,8 +7,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: 0.0.5
-    chart: "proxyinjector-0.0.5"
+    version: 0.0.6
+    chart: "proxyinjector-0.0.6"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -32,7 +32,7 @@ spec:
       - env:
         - name: CONFIG_FILE_PATH
           value: "/etc/ProxyInjector/config.yml"
-        image: "stakater/proxyinjector:0.0.5"
+        image: "stakater/proxyinjector:0.0.6"
         imagePullPolicy: IfNotPresent
         name: proxyinjector
         volumeMounts:
