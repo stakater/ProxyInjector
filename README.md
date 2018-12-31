@@ -5,14 +5,12 @@ A Kubernetes controller to inject an authentication proxy container to relevant 
 
 ## Problem Statement
 
-We want to automatically inject a keycloak proxy container in a pod, for any deployment that requires to connect
+We want to automatically inject a [keycloak gatekeeper](https://github.com/keycloak/keycloak-gatekeeper) container in a pod, for any deployment that requires to connect
  to keycloak, instead of manually adding a sidecar container with each deployment 
 
 ## Solution
 
-This controller will continuously watch deployments/statefulsets/daemonsets in specific or all namespaces,
- and automatically add a sidecar container for keycloak proxy. Configuration for the keycloak proxy is done through
- annotations of the respective deployment or with ConfigMap of the ProxyInjector.
+This controller will continuously watch deployments in specific or all namespaces, and automatically add a sidecar container for [keycloak gatekeeper](https://github.com/keycloak/keycloak-gatekeeper). Configuration for the keycloak gatekeeper is done through annotations of the respective deployment or with ConfigMap of the ProxyInjector.
 
 
 ## Usage
@@ -29,11 +27,11 @@ The following quickstart let's you set up ProxyInjector:
   
     | Key                                        | Description                                                                                                                                  |
     |--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-    | authproxy.stakater.com/enabled             | Enables Keycloak proxy configuration                                                                                                         |
+    | authproxy.stakater.com/enabled             | Enables Keycloak gatekeeper configuration                                                                                                         |
     | authproxy.stakater.com/source-service-name | Name of service that needs to be reconfigured to connect to the proxy                                                                        |
     | authproxy.stakater.com/image-name          | Keycloak Docker image name e.g. `quay.io/gambol99/keycloak-proxy`                                                                            |
     | authproxy.stakater.com/image-tag           | Keycloak Docker image tag e.g. `v2.1.1`                                                                                                      |
-    | authproxy.stakater.com/target-port         | (default=80) the port number that should be changed for the target port of the service, i.e. the port where keycloak proxy will be listening |
+    | authproxy.stakater.com/target-port         | (default=80) the port number that should be changed for the target port of the service, i.e. the port where keycloak gatekeeper will be listening |
     
     The following arguments can either be added to the proxy injector `config.yaml` in the ConfigMap, or as annotations
     on the target deployments with a `authproxy.stakater.com/` prefix.
