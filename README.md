@@ -1,4 +1,4 @@
-# ProxyInjector
+# ![](assets/web/proxyinjector-round-100px.png) Proxy Injector
 A Kubernetes controller to inject an authentication proxy container to relevant pods
 
 [![Get started with Stakater](https://stakater.github.io/README/stakater-github-banner.png)](http://stakater.com/?utm_source=ProxyInjector&utm_medium=github)
