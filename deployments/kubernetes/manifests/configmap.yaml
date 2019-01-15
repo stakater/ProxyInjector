@@ -5,10 +5,10 @@ kind: ConfigMap
 metadata:
   labels:
     app: proxyinjector
-    version: 0.0.8
+    version: 0.0.9
     group: com.stakater.platform
     provider: stakater
-    chart: "proxyinjector-0.0.8"
+    chart: "proxyinjector-0.0.9"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
