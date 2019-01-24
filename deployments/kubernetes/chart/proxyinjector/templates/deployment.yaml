@@ -17,6 +17,10 @@ spec:
       labels:
 {{ include "proxyinjector-labels.selector" . | indent 8 }}
     spec:
+      {{- if .Values.proxyinjector.tolerations }}
+      tolerations:
+{{ toYaml .Values.proxyinjector.tolerations | indent 8 -}}
+      {{- end }}
       containers:
       - env:
         - name: CONFIG_FILE_PATH
