@@ -113,8 +113,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.10
-    chart: "proxyinjector-v0.0.10"
+    version: v0.0.11
+    chart: "proxyinjector-v0.0.11"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -138,7 +138,7 @@ spec:
       - env:
         - name: CONFIG_FILE_PATH
           value: "/etc/ProxyInjector/config.yml"
-        image: "stakater/proxyinjector:v0.0.10"
+        image: "stakater/proxyinjector:v0.0.11"
         imagePullPolicy: IfNotPresent
         name: proxyinjector
         volumeMounts:
@@ -159,8 +159,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.10
-    chart: "proxyinjector-v0.0.10"
+    version: v0.0.11
+    chart: "proxyinjector-v0.0.11"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -172,8 +172,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.10
-    chart: "proxyinjector-v0.0.10"
+    version: v0.0.11
+    chart: "proxyinjector-v0.0.11"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role
@@ -204,8 +204,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.10
-    chart: "proxyinjector-v0.0.10"
+    version: v0.0.11
+    chart: "proxyinjector-v0.0.11"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role-binding
@@ -225,10 +225,10 @@ kind: ConfigMap
 metadata:
   labels:
     app: proxyinjector
-    version: v0.0.10
+    version: v0.0.11
     group: com.stakater.platform
     provider: stakater
-    chart: "proxyinjector-v0.0.10"
+    chart: "proxyinjector-v0.0.11"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
