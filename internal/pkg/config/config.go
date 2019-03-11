@@ -23,6 +23,7 @@ type Config struct {
 		Methods []string `yaml:"methods"`
 		Roles   []string `yaml:"roles"`
 	} `yaml:"resources"`
+	Scopes []string `yaml:"scopes"`
 }
 
 func ReadConfig(filePath string) Config {

@@ -213,6 +213,9 @@ func getConfigArgs(config config.Config, annotations map[string]string) []string
 		}
 		configArgs = append(configArgs, "--resources="+res)
 	}
+	for _, scope := range config.Scopes {
+		configArgs = append(configArgs, "--scopes="+scope)
+	}
 
 	return configArgs
 }
