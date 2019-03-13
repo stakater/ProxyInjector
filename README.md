@@ -25,24 +25,23 @@ The following quickstart let's you set up ProxyInjector:
 
 2. When deploying any application that needs Keycloak authentication, add the following annotations to the deployment.
   
-    | Key                                        | Description                                                                                                                                  |
-    |--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+    | Key                                        | Description                                                                                                                                       |
+    |--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
     | authproxy.stakater.com/enabled             | Enables Keycloak gatekeeper configuration                                                                                                         |
-    | authproxy.stakater.com/source-service-name | Name of service that needs to be reconfigured to connect to the proxy                                                                        |
-    | authproxy.stakater.com/image-name          | Keycloak Docker image name e.g. `quay.io/gambol99/keycloak-proxy`                                                                            |
-    | authproxy.stakater.com/image-tag           | Keycloak Docker image tag e.g. `v2.1.1`                                                                                                      |
+    | authproxy.stakater.com/source-service-name | Name of service that needs to be reconfigured to connect to the proxy                                                                             |
     | authproxy.stakater.com/target-port         | (default=80) the port number that should be changed for the target port of the service, i.e. the port where keycloak gatekeeper will be listening |
     
     The following arguments can either be added to the proxy injector `config.yaml` in the ConfigMap, or as annotations
     on the target deployments with a `authproxy.stakater.com/` prefix.
 
-    | Key           | Description                                             |
-    |---------------|---------------------------------------------------------|
-    | listen        | the interface the proxy should be listening on          |
-    | upstream-url  | url for the upstream endpoint you wish to proxy         |
-    | resources     | list of resources to proxy uri, methods, roles          |
-    | client-id     | client id used to authenticate to the oauth service     |
-    | client-secret | client secret used to authenticate to the oauth service |
+    | Key              | Description                                                               |
+    |------------------|---------------------------------------------------------------------------|
+    | listen           | the interface the proxy should be listening on                            |
+    | upstream-url     | url for the upstream endpoint you wish to proxy                           |
+    | resources        | list of resources to proxy uri, methods, roles                            |
+    | client-id        | client id used to authenticate to the oauth service                       |
+    | client-secret    | client secret used to authenticate to the oauth service                   |
+    | gatekeeper-image | Keycloak Gatekeeper image e.g. `keycloak/keycloak-gatekeeper:4.6.0.Final` |
 
 The rest of the available options can be found at the [Keycloak Gatekeeper documentation](https://github.com/keycloak/keycloak-gatekeeper#keycloak-proxy)
  
