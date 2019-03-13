@@ -78,8 +78,12 @@ func (r ResourceCreatedHandler) Handle(conf config.Config, resourceType string) 
 				}
 			}
 
+			if annotations[constants.ImageNameAnnotation] != "" {
+				annotations[constants.ImageNameAnnotation] = conf.GatekeeperImage
+			}
+
 			if err == nil {
-				payloadBytes, err3 := getPatch(containerArgs, annotations[constants.ImageNameAnnotation]+":"+annotations[constants.ImageTagAnnotation])
+				payloadBytes, err3 := getPatch(containerArgs, annotations[constants.ImageNameAnnotation])
 
 				if err3 == nil {
 
