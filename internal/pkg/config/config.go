@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	GatekeeperImage   string   `yaml:"gatekeeper-image"`
 	ClientId          string   `yaml:"client-id"`
 	ClientSecret      string   `yaml:"client-secret"`
 	DiscoveryUrl      string   `yaml:"discovery-url"`

@@ -4,8 +4,7 @@ const (
 	AnnotationPrefix            = "authproxy.stakater.com/"
 	EnabledAnnotation           = "authproxy.stakater.com/enabled"
 	SourceServiceNameAnnotation = "authproxy.stakater.com/source-service-name"
-	ImageNameAnnotation         = "authproxy.stakater.com/image-name"
-	ImageTagAnnotation          = "authproxy.stakater.com/image-tag"
+	ImageNameAnnotation         = "authproxy.stakater.com/gatekeeper-image"
 	ImagePullPolicyAnnotation   = "authproxy.stakater.com/image-pull-policy"
 	TargetPortAnnotation        = "authproxy.stakater.com/target-port"
 )
