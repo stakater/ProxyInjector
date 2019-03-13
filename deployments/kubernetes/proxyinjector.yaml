@@ -113,8 +113,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.12
-    chart: "proxyinjector-v0.0.12"
+    version: v0.0.13
+    chart: "proxyinjector-v0.0.13"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -138,7 +138,7 @@ spec:
       - env:
         - name: CONFIG_FILE_PATH
           value: "/etc/ProxyInjector/config.yml"
-        image: "stakater/proxyinjector:v0.0.12"
+        image: "stakater/proxyinjector:v0.0.13"
         imagePullPolicy: IfNotPresent
         name: proxyinjector
         volumeMounts:
@@ -159,8 +159,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.12
-    chart: "proxyinjector-v0.0.12"
+    version: v0.0.13
+    chart: "proxyinjector-v0.0.13"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -172,8 +172,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.12
-    chart: "proxyinjector-v0.0.12"
+    version: v0.0.13
+    chart: "proxyinjector-v0.0.13"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role
@@ -204,8 +204,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.12
-    chart: "proxyinjector-v0.0.12"
+    version: v0.0.13
+    chart: "proxyinjector-v0.0.13"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role-binding
@@ -225,16 +225,17 @@ kind: ConfigMap
 metadata:
   labels:
     app: proxyinjector
-    version: v0.0.12
+    version: v0.0.13
     group: com.stakater.platform
     provider: stakater
-    chart: "proxyinjector-v0.0.12"
+    chart: "proxyinjector-v0.0.13"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
 data:
   config.yml:
     |-
+      gatekeeper-image : "keycloak/keycloak-gatekeeper:4.6.0.Final"
       enable-default-deny: true
       secure-cookie: false
       verbose: true

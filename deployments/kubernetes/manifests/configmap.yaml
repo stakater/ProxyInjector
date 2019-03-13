@@ -5,16 +5,17 @@ kind: ConfigMap
 metadata:
   labels:
     app: proxyinjector
-    version: v0.0.12
+    version: v0.0.13
     group: com.stakater.platform
     provider: stakater
-    chart: "proxyinjector-v0.0.12"
+    chart: "proxyinjector-v0.0.13"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
 data:
   config.yml:
     |-
+      gatekeeper-image : "keycloak/keycloak-gatekeeper:4.6.0.Final"
       enable-default-deny: true
       secure-cookie: false
       verbose: true
