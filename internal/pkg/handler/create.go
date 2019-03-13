@@ -78,7 +78,7 @@ func (r ResourceCreatedHandler) Handle(conf config.Config, resourceType string) 
 				}
 			}
 
-			if annotations[constants.ImageNameAnnotation] != "" {
+			if annotations[constants.ImageNameAnnotation] == "" {
 				annotations[constants.ImageNameAnnotation] = conf.GatekeeperImage
 			}
 
