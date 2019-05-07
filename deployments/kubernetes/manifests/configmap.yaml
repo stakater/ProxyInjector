@@ -5,10 +5,10 @@ kind: ConfigMap
 metadata:
   labels:
     app: proxyinjector
-    version: v0.0.15
+    version: v0.0.16
     group: com.stakater.platform
     provider: stakater
-    chart: "proxyinjector-v0.0.15"
+    chart: "proxyinjector-v0.0.16"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -26,7 +26,7 @@ data:
       - GET
       - POST
       resources:
-      - uri: '/'
+      - uri: '/*'
       scopes:
       - 'good-service'
     
