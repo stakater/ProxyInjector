@@ -66,7 +66,7 @@ You can find more documentation [here](docs/)
 File a GitHub [issue](https://github.com/stakater/ProxyInjector/issues), or send us an [email](mailto:hello@stakater.com).
 
 ### Talk to us on Slack
-Join and talk to us on the #tools-proxyinjector channel for discussing the Ingress Monitor Controller
+Join and talk to us on the #tools-proxyinjector channel for discussing the ProxyInjector
 
 [![Join Slack](https://stakater.github.io/README/stakater-join-slack-btn.png)](https://stakater-slack.herokuapp.com/)
 [![Chat](https://stakater.github.io/README/stakater-chat-btn.png)](https://stakater.slack.com/messages/CFCP3MUR4/)
