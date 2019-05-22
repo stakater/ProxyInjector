@@ -6,10 +6,10 @@ proxyinjector:
   labels:
     provider: stakater
     group: com.stakater.platform
-    version: v0.0.16
+    version: v0.0.17
   image:
     name: stakater/proxyinjector
-    tag: "v0.0.16"
+    tag: "v0.0.17"
     pullPolicy: IfNotPresent
   watchGlobally: true
   configFilePath: /etc/ProxyInjector
