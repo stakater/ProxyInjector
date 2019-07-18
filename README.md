@@ -53,6 +53,7 @@ The rest of the available options can be found at the [Keycloak Gatekeeper docum
     | authproxy.stakater.com/enabled             | (true/false, default=false) Enables Keycloak gatekeeper configuration |
     | authproxy.stakater.com/source-service-name | Name of service that needs to be reconfigured to connect to the proxy. instead of the service directly routing to the app container, it will now route to the proxy sidecar instead. |
     | authproxy.stakater.com/target-port         | (default=80) the port on the pod where the proxy sidecar (keycloak gatekeeper) will be listening. If not specified, the default value of 80 is used. This port should match the `listen` configuration |
+    | authproxy.stakater.com/resources           | String of resources separated by `&` e.g. (`uri=/*|white-listed=true&uri=/css/*|white-listed=false|methods=GET,POST`)
 
     The `authproxy.stakater.com/listen` annotation or the `listen` property in the ProxyInjector ConfigMap should
     specify where the proxy sidecar will listen for incoming requests, e.g. "0.0.0.0:80" i.e. local port 80

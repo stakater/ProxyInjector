@@ -72,7 +72,14 @@ func (r ResourceCreatedHandler) Handle(conf config.Config, resourceType string) 
 			containerArgs := getConfigArgs(conf, annotations)
 
 			for _, arg := range constants.KeycloakArgs {
-				if annotations[constants.AnnotationPrefix+arg] != "" {
+				if ContainsKey(annotations, arg) {
+					containerArgs = removeIfExists(containerArgs, arg)
+					resourceStrings := strings.Split(annotations[constants.AnnotationPrefix+arg], "&")
+
+					for _, resourceString := range resourceStrings {
+						containerArgs = append(containerArgs, "--"+arg+"="+resourceString)
+					}
+				} else if annotations[constants.AnnotationPrefix+arg] != "" {
 					containerArgs = removeIfExists(containerArgs, arg)
 					containerArgs = append(containerArgs, "--"+arg+"="+annotations[constants.AnnotationPrefix+arg])
 				}
@@ -131,6 +138,16 @@ func removeIfExists(containerArgs []string, arg string) []string {
 		}
 	}
 	return containerArgs[:i]
+}
+
+// ContainsKey tells whether a key exist in map[string]string.
+func ContainsKey(list map[string]string, word string) bool {
+	for key := range list {
+		if strings.Contains(key, word) {
+			return true
+		}
+	}
+	return false
 }
 
 func getPatch(containerArgs []string, image string) ([]byte, error) {
