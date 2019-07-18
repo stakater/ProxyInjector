@@ -36,7 +36,7 @@ The following quickstart let's you set up ProxyInjector:
     | resources        | list of resources to proxy uri, methods, roles                            |
     | client-id        | client id used to authenticate to the oauth service                       |
     | client-secret    | client secret used to authenticate to the oauth service                   |
-    | gatekeeper-image | Keycloak Gatekeeper image e.g. `keycloak/keycloak-gatekeeper:4.6.0.Final` |
+    | gatekeeper-image | Keycloak Gatekeeper image e.g. `keycloak/keycloak-gatekeeper:6.0.1` |
 
 The rest of the available options can be found at the [Keycloak Gatekeeper documentation](https://www.keycloak.org/docs/latest/securing_apps/index.html#configuration-options)
 

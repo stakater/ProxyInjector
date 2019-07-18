@@ -14,7 +14,7 @@ proxyinjector:
   watchGlobally: true
   configFilePath: /etc/ProxyInjector
   proxyconfig: |-
-    gatekeeper-image : "keycloak/keycloak-gatekeeper:4.6.0.Final"
+    gatekeeper-image : "keycloak/keycloak-gatekeeper:6.0.1"
     enable-default-deny: true
     secure-cookie: false
     verbose: true
