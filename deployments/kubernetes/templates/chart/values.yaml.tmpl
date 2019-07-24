@@ -15,18 +15,19 @@ proxyinjector:
   watchGlobally: true
   configFilePath: /etc/ProxyInjector
   data:
-    proxyconfig: |-
-      gatekeeper-image : "keycloak/keycloak-gatekeeper:6.0.1"
-      enable-default-deny: true
-      secure-cookie: false
-      verbose: true
-      enable-logging: true
-      cors-origins:
-      - '*'
-      cors-methods:
-      - GET
-      - POST
-      resources:
-      - uri: '/*'
-      scopes:
-      - 'good-service'
+    config.yml: |-
+      proxyconfig:
+        gatekeeper-image : "keycloak/keycloak-gatekeeper:6.0.1"
+        enable-default-deny: true
+        secure-cookie: false
+        verbose: true
+        enable-logging: true
+        cors-origins:
+        - '*'
+        cors-methods:
+        - GET
+        - POST
+        resources:
+        - uri: '/*'
+        scopes:
+        - 'good-service'

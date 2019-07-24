@@ -12,6 +12,5 @@ metadata:
     heritage: {{ .Release.Service | quote }}
   name: {{ template "proxyinjector-name" . }}
 data:
-  config.yml:
-{{ toYaml .Values.proxyinjector.data | indent 4 }}
+{{ toYaml .Values.proxyinjector.data | indent 2 }}
 {{- end }}

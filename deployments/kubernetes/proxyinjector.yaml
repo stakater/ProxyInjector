@@ -14,8 +14,8 @@ metadata:
     heritage: "Tiller"
   name: proxyinjector
 data:
-  config.yml:
-    proxyconfig: |-
+  config.yml: |-
+    proxyconfig:
       gatekeeper-image: "keycloak/keycloak-gatekeeper:6.0.1"
       enable-default-deny: true
       secure-cookie: false
@@ -30,7 +30,7 @@ data:
       - uri: '/*'
       scopes:
       - 'good-service'
-    
+  
 ---
 # Source: proxyinjector/templates/rbac.yaml
 apiVersion: v1
