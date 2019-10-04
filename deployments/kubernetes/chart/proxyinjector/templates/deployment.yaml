@@ -39,7 +39,12 @@ spec:
             name: config-volume
       serviceAccountName: {{ template "proxyinjector-name" . }}
       volumes:
+      {{- if eq .Values.proxyinjector.mount "secret" }}
+      - secret:
+          secretName: {{ template "proxyinjector-name" . }}
+      {{ else }}
       - configMap:
           name: {{ template "proxyinjector-name" . }}
+      {{- end }}
         name: config-volume
               
