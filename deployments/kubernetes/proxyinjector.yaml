@@ -1,35 +1,155 @@
 ---
-# Source: proxyinjector/templates/configmap.yaml
-
+# Source: proxyinjector/templates/rbac.yaml
 apiVersion: v1
-kind: ConfigMap
+kind: ServiceAccount
 metadata:
   labels:
     app: proxyinjector
-    version: v0.0.18
     group: com.stakater.platform
     provider: stakater
-    chart: "proxyinjector-v0.0.18"
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
-data:
-  config.yml: |-
-    proxyconfig:
-      gatekeeper-image: "keycloak/keycloak-gatekeeper:6.0.1"
-      enable-default-deny: true
-      secure-cookie: false
-      verbose: true
-      enable-logging: true
-      cors-origins:
-      - '*'
-      cors-methods:
-      - GET
-      - POST
-      resources:
-      - uri: '/*'
-      scopes:
-      - 'good-service'
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector-role
+  namespace: test-proxyinjector
+rules:
+- apiGroups:
+  - ""
+  - "extensions"
+  - "apps"
+  resources:
+  - deployments
+  - daemonsets
+  - statefulsets
+  - services
+  verbs:
+  - list
+  - get
+  - watch
+  - update
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector-role-binding
+  namespace: test-proxyinjector
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: proxyinjector-role
+subjects:
+- kind: ServiceAccount
+  name: proxyinjector
+  namespace: test-proxyinjector
+
+
+
+
+---
+# Source: proxyinjector/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: 0.0.1
+    chart: "proxyinjector-0.0.1"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: proxyinjector
+      group: com.stakater.platform
+      provider: stakater
+  template:
+    metadata:
+      labels:
+        app: proxyinjector
+        group: com.stakater.platform
+        provider: stakater
+    spec:
+      containers:
+      - env:
+        image: "stakater/proxyinjector:0.0.1"
+        imagePullPolicy: Always
+        name: proxyinjector
+      serviceAccountName: proxyinjector
+
+---
+# Source: proxyinjector/templates/deployment.yaml
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: proxyinjector
+    group: com.stakater.platform
+    provider: stakater
+    version: v0.0.20
+    chart: "proxyinjector-v0.0.20"
+    release: "RELEASE-NAME"
+    heritage: "Tiller"
+  name: proxyinjector
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: proxyinjector
+      group: com.stakater.platform
+      provider: stakater
+  template:
+    metadata:
+      labels:
+        app: proxyinjector
+        group: com.stakater.platform
+        provider: stakater
+    spec:
+      containers:
+      - env:
+        - name: CONFIG_FILE_PATH
+          value: "/etc/ProxyInjector/config.yml"
+        image: "stakater/proxyinjector:v0.0.20"
+        imagePullPolicy: IfNotPresent
+        name: proxyinjector
+        volumeMounts:
+          - mountPath: /etc/ProxyInjector
+            name: config-volume
+      serviceAccountName: proxyinjector
+      volumes:
+      - configMap:
+          name: proxyinjector
+        name: config-volume
+              
 ---
 # Source: proxyinjector/templates/rbac.yaml
 apiVersion: v1
@@ -39,8 +159,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.19
-    chart: "proxyinjector-v0.0.19"
+    version: v0.0.20
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -52,8 +172,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.19
-    chart: "proxyinjector-v0.0.19"
+    version: v0.0.20
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role
@@ -84,8 +204,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.19
-    chart: "proxyinjector-v0.0.19"
+    version: v0.0.20
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role-binding
@@ -99,51 +219,38 @@ subjects:
     name: proxyinjector
     namespace: default
 ---
-# Source: proxyinjector/templates/deployment.yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
+# Source: proxyinjector/templates/secrets.yaml
+
+---
+# Source: proxyinjector/templates/configmap.yaml
+
+apiVersion: v1
+kind: ConfigMap
 metadata:
   labels:
     app: proxyinjector
+    version: v0.0.20
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.18
-    chart: "proxyinjector-v0.0.18"
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
-  namespace: default
-spec:
-  replicas: 1
-  revisionHistoryLimit: 2
-  selector:
-    matchLabels:
-      app: proxyinjector
-      group: com.stakater.platform
-      provider: stakater
-  template:
-    metadata:
-      labels:
-        app: proxyinjector
-        group: com.stakater.platform
-        provider: stakater
-    spec:
-      containers:
-      - env:
-        - name: CONFIG_FILE_PATH
-          value: "/etc/ProxyInjector/config.yml"
-        image: "stakater/proxyinjector:v0.0.18"
-        imagePullPolicy: IfNotPresent
-        name: proxyinjector
-        volumeMounts:
-          - mountPath: /etc/ProxyInjector
-            name: config-volume
-      serviceAccountName: proxyinjector
-      volumes:
-      - configMap:
-          name: proxyinjector
-        name: config-volume
-              
----
-# Source: proxyinjector/templates/secrets.yaml
-
+data:
+  config.yml: |-
+    proxyconfig:
+      gatekeeper-image : "keycloak/keycloak-gatekeeper:6.0.1"
+      enable-default-deny: true
+      secure-cookie: false
+      verbose: true
+      enable-logging: true
+      cors-origins:
+      - '*'
+      cors-methods:
+      - GET
+      - POST
+      resources:
+      - uri: '/*'
+      scopes:
+      - 'good-service'
+  

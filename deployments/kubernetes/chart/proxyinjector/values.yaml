@@ -7,17 +7,17 @@ proxyinjector:
   labels:
     provider: stakater
     group: com.stakater.platform
-    version: v0.0.19
+    version: v0.0.20
   image:
     name: stakater/proxyinjector
-    tag: "v0.0.19"
+    tag: "v0.0.20"
     pullPolicy: IfNotPresent
   watchGlobally: true
   configFilePath: /etc/ProxyInjector
   data:
     config.yml: |-
       proxyconfig:
-        gatekeeper-image: "keycloak/keycloak-gatekeeper:6.0.1"
+        gatekeeper-image : "keycloak/keycloak-gatekeeper:6.0.1"
         enable-default-deny: true
         secure-cookie: false
         verbose: true
