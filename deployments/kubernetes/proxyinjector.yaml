@@ -113,8 +113,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.18
-    chart: "proxyinjector-v0.0.18"
+    version: v0.0.20
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -138,7 +138,7 @@ spec:
       - env:
         - name: CONFIG_FILE_PATH
           value: "/etc/ProxyInjector/config.yml"
-        image: "stakater/proxyinjector:v0.0.18"
+        image: "stakater/proxyinjector:v0.0.20"
         imagePullPolicy: IfNotPresent
         name: proxyinjector
         volumeMounts:
@@ -159,8 +159,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.18
-    chart: "proxyinjector-v0.0.18"
+    version: v0.0.20
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
@@ -172,8 +172,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.18
-    chart: "proxyinjector-v0.0.18"
+    version: v0.0.20
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role
@@ -204,8 +204,8 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.18
-    chart: "proxyinjector-v0.0.18"
+    version: v0.0.20
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector-role-binding
@@ -219,23 +219,27 @@ subjects:
     name: proxyinjector
     namespace: default
 ---
+# Source: proxyinjector/templates/secrets.yaml
+
+---
 # Source: proxyinjector/templates/configmap.yaml
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
     app: proxyinjector
-    version: v0.0.18
+    version: v0.0.20
     group: com.stakater.platform
     provider: stakater
-    chart: "proxyinjector-v0.0.18"
+    chart: "proxyinjector-v0.0.20"
     release: "RELEASE-NAME"
     heritage: "Tiller"
   name: proxyinjector
 data:
-  config.yml:
-    |-
-      gatekeeper-image : "keycloak/keycloak-gatekeeper:4.6.0.Final"
+  config.yml: |-
+    proxyconfig:
+      gatekeeper-image : "keycloak/keycloak-gatekeeper:6.0.1"
       enable-default-deny: true
       secure-cookie: false
       verbose: true
@@ -249,4 +253,4 @@ data:
       - uri: '/*'
       scopes:
       - 'good-service'
-    
+  

@@ -25,7 +25,7 @@ For now the ProxyInjector only supports [Keycloak Gatekeeper](https://github.com
 The following quickstart let's you set up ProxyInjector:
 
 1. Add configuration to the ProxyInjector
-    The following arguments can either be added to the proxy injector `config.yaml` in the ConfigMap for centralized configuration,
+    The following arguments can either be added to the proxy injector `config.yaml` in the ConfigMap/Secret for centralized configuration,
      or as annotations on the individual target deployments with a `authproxy.stakater.com/` prefix. In case of both,
      the deployment annotation values will override the central configuration. 
 
@@ -36,9 +36,11 @@ The following quickstart let's you set up ProxyInjector:
     | resources        | list of resources to proxy uri, methods, roles                            |
     | client-id        | client id used to authenticate to the oauth service                       |
     | client-secret    | client secret used to authenticate to the oauth service                   |
-    | gatekeeper-image | Keycloak Gatekeeper image e.g. `keycloak/keycloak-gatekeeper:4.6.0.Final` |
+    | gatekeeper-image | Keycloak Gatekeeper image e.g. `keycloak/keycloak-gatekeeper:6.0.1` |
 
 The rest of the available options can be found at the [Keycloak Gatekeeper documentation](https://www.keycloak.org/docs/latest/securing_apps/index.html#configuration-options)
+
+Note 1: See the section `Using Secrets` below if you do not want to use ConfigMap (because `client-id` and `client-secret` in plain text) and want to use Secrets to hide them.
 
 2. Deploy the controller by running the following command:
 
@@ -53,10 +55,46 @@ The rest of the available options can be found at the [Keycloak Gatekeeper docum
     | authproxy.stakater.com/enabled             | (true/false, default=false) Enables Keycloak gatekeeper configuration |
     | authproxy.stakater.com/source-service-name | Name of service that needs to be reconfigured to connect to the proxy. instead of the service directly routing to the app container, it will now route to the proxy sidecar instead. |
     | authproxy.stakater.com/target-port         | (default=80) the port on the pod where the proxy sidecar (keycloak gatekeeper) will be listening. If not specified, the default value of 80 is used. This port should match the `listen` configuration |
+    | authproxy.stakater.com/resources           | String of resources separated by `&` e.g. (`uri=/*|white-listed=true&uri=/css/*|white-listed=false|methods=GET,POST`)
 
     The `authproxy.stakater.com/listen` annotation or the `listen` property in the ProxyInjector ConfigMap should
     specify where the proxy sidecar will listen for incoming requests, e.g. "0.0.0.0:80" i.e. local port 80
  
+
+### Using Secrets
+
+To use secrets:
+    
+  1. Open [values.yaml](https://github.com/stakater/ProxyInjector/blob/master/deployments/kubernetes/chart/proxyinjector/values.yaml) file by navigating to `deployments/kubernetes/chart/proxyinjector/`
+  
+  2. Set `mount` equals to `"secret"` and pass the data in the data section at the bottom.
+  
+  3. Run `helm template . > proxyinjector.yaml`
+  
+  4. Deploy using the `Deploying` section below.
+
+### Using ConfigMap
+
+To pass user credentials/ API keys in secrets:
+     
+  1. Open [values.yaml](https://github.com/stakater/ProxyInjector/blob/master/deployments/kubernetes/chart/proxyinjector/values.yaml) file by navigating to `deployments/kubernetes/chart/proxyinjector/`
+  
+  2. Set `mount` equals to `"configmap"` and pass the data in the data section at the bottom.
+  
+  3. Run `helm template . > proxyinjector.yaml`
+  
+  4. Deploy using the `Deploying` section below.
+
+### Deploying
+
+You can deploy the controller in the namespace you want to monitor by running the following kubectl command:
+
+```bash
+kubectl apply -f proxyinjector.yaml -n <namespace>
+```
+
+*Note*: Before applying `proxyinjector.yaml`, You need to modify the namespace in the `RoleBinding` subjects section to the namespace you want to apply RBAC to.
+
 ## Help
 
 ### Documentation
