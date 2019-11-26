@@ -3,6 +3,7 @@ kubernetes:
 
 proxyinjector:
   mount: "configmap"
+  existingSecret: ""
   tolerations: {}
   labels:
     provider: stakater
