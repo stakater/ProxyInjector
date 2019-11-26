@@ -67,11 +67,16 @@ To use secrets:
     
   1. Open [values.yaml](https://github.com/stakater/ProxyInjector/blob/master/deployments/kubernetes/chart/proxyinjector/values.yaml) file by navigating to `deployments/kubernetes/chart/proxyinjector/`
   
-  2. Set `mount` equals to `"secret"` and pass the data in the data section at the bottom.
+  2. Set `proxyinjector.mount` equals to `"secret"` and pass the data in the data section at the bottom.
   
   3. Run `helm template . > proxyinjector.yaml`
   
   4. Deploy using the `Deploying` section below.
+
+To use existing Secrets:
+
+  1. Set `proxyinjector.mount` equals to `"secret"`
+  2. set `proxyinjector.existingSecret` equals to `EXISTING_SECRET_NAME`
 
 ### Using ConfigMap
 
@@ -79,7 +84,7 @@ To pass user credentials/ API keys in secrets:
      
   1. Open [values.yaml](https://github.com/stakater/ProxyInjector/blob/master/deployments/kubernetes/chart/proxyinjector/values.yaml) file by navigating to `deployments/kubernetes/chart/proxyinjector/`
   
-  2. Set `mount` equals to `"configmap"` and pass the data in the data section at the bottom.
+  2. Set `proxyinjector.mount` equals to `"configmap"` and pass the data in the data section at the bottom.
   
   3. Run `helm template . > proxyinjector.yaml`
   
