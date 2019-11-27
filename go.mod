@@ -14,3 +14,9 @@ require (
 	k8s.io/client-go v11.0.0+incompatible
 	k8s.io/utils v0.0.0-20191114200735-6ca3b61696b6 // indirect
 )
+
+replace (
+	k8s.io/api => k8s.io/api v0.0.0-20191004120104-195af9ec3521 // release-1.16
+	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20191004115801-a2eda9f80ab8 // kubernetes-1.16.0
+	k8s.io/client-go => k8s.io/client-go v0.0.0-20190918160344-1fbdaa4c8d90 // kubernetes-1.16.0
+)

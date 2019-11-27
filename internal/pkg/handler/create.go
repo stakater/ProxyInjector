@@ -65,7 +65,7 @@ func (r ResourceCreatedHandler) Handle(conf config.Config, resourceType string) 
 
 		if annotations[constants.EnabledAnnotation] == "true" {
 
-			client, err := kube.GetClient()
+			client, err := kube.GetKubernetesClient()
 
 			logger.Infof("Updating resource ... %s", name)
 
