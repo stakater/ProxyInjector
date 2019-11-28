@@ -8,7 +8,7 @@ import (
 	"github.com/stakater/ProxyInjector/internal/pkg/config"
 	"github.com/stakater/ProxyInjector/internal/pkg/controller"
 	"github.com/stakater/ProxyInjector/pkg/kube"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // NewProxyInjectorCommand starts the proxy injector controller
@@ -30,7 +30,7 @@ func startProxyInjector(cmd *cobra.Command, args []string) {
 	}
 
 	// create the clientset
-	clientset, err := kube.GetClient()
+	clientset, err := kube.GetKubernetesClient()
 	if err != nil {
 		logrus.Fatal(err)
 	}
