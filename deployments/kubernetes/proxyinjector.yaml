@@ -113,9 +113,9 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.21
-    chart: "proxyinjector-v0.0.21"
-    release: "RELEASE-NAME"
+    version: v0.0.22
+    chart: "proxyinjector-v0.0.22"
+    release: "proxyinjector"
     heritage: "Tiller"
   name: proxyinjector
   namespace: default
@@ -138,7 +138,7 @@ spec:
       - env:
         - name: CONFIG_FILE_PATH
           value: "/etc/ProxyInjector/config.yml"
-        image: "stakater/proxyinjector:v0.0.21"
+        image: "stakater/proxyinjector:v0.0.22"
         imagePullPolicy: IfNotPresent
         name: proxyinjector
         volumeMounts:
@@ -149,7 +149,6 @@ spec:
       - configMap:
           name: proxyinjector
         name: config-volume
-              
 ---
 # Source: proxyinjector/templates/rbac.yaml
 apiVersion: v1
@@ -159,9 +158,9 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.21
-    chart: "proxyinjector-v0.0.21"
-    release: "RELEASE-NAME"
+    version: v0.0.22
+    chart: "proxyinjector-v0.0.22"
+    release: "proxyinjector"
     heritage: "Tiller"
   name: proxyinjector
 ---
@@ -172,9 +171,9 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.21
-    chart: "proxyinjector-v0.0.21"
-    release: "RELEASE-NAME"
+    version: v0.0.22
+    chart: "proxyinjector-v0.0.22"
+    release: "proxyinjector"
     heritage: "Tiller"
   name: proxyinjector-role
   namespace: default
@@ -204,9 +203,9 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.21
-    chart: "proxyinjector-v0.0.21"
-    release: "RELEASE-NAME"
+    version: v0.0.22
+    chart: "proxyinjector-v0.0.22"
+    release: "proxyinjector"
     heritage: "Tiller"
   name: proxyinjector-role-binding
   namespace: default
@@ -229,11 +228,11 @@ kind: ConfigMap
 metadata:
   labels:
     app: proxyinjector
-    version: v0.0.21
+    version: v0.0.22
     group: com.stakater.platform
     provider: stakater
-    chart: "proxyinjector-v0.0.21"
-    release: "RELEASE-NAME"
+    chart: "proxyinjector-v0.0.22"
+    release: "proxyinjector"
     heritage: "Tiller"
   name: proxyinjector
 data:
