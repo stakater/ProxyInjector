@@ -7,9 +7,9 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.21
-    chart: "proxyinjector-v0.0.21"
-    release: "RELEASE-NAME"
+    version: v0.0.22
+    chart: "proxyinjector-v0.0.22"
+    release: "proxyinjector"
     heritage: "Tiller"
   name: proxyinjector
 ---
@@ -20,9 +20,9 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.21
-    chart: "proxyinjector-v0.0.21"
-    release: "RELEASE-NAME"
+    version: v0.0.22
+    chart: "proxyinjector-v0.0.22"
+    release: "proxyinjector"
     heritage: "Tiller"
   name: proxyinjector-role
   namespace: default
@@ -52,9 +52,9 @@ metadata:
     app: proxyinjector
     group: com.stakater.platform
     provider: stakater
-    version: v0.0.21
-    chart: "proxyinjector-v0.0.21"
-    release: "RELEASE-NAME"
+    version: v0.0.22
+    chart: "proxyinjector-v0.0.22"
+    release: "proxyinjector"
     heritage: "Tiller"
   name: proxyinjector-role-binding
   namespace: default
