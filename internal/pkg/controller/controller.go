@@ -39,7 +39,7 @@ func NewController(
 	}
 
 	queue := workqueue.NewRateLimitingQueue(workqueue.DefaultControllerRateLimiter())
-	listWatcher := cache.NewListWatchFromClient(client.ExtensionsV1beta1().RESTClient(), resource, namespace, fields.Everything())
+	listWatcher := cache.NewListWatchFromClient(client.AppsV1().RESTClient(), resource, namespace, fields.Everything())
 
 	indexer, informer := cache.NewIndexerInformer(listWatcher, kube.ResourceMap[resource], 0, cache.ResourceEventHandlerFuncs{
 		AddFunc:    c.Add,

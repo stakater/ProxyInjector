@@ -1,8 +1,8 @@
 package callbacks
 
 import (
-	apps "k8s.io/api/apps/v1beta2"
-	ext "k8s.io/api/extensions/v1beta1"
+	apps "k8s.io/api/apps/v1"
+	ext "k8s.io/api/apps/v1"
 )
 
 func GetDeploymentAnnotations(resource interface{}) map[string]string {

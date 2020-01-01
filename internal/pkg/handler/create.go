@@ -98,13 +98,13 @@ func (r ResourceCreatedHandler) Handle(conf config.Config, resourceType string) 
 					logger.Info("checking resource type and updating...")
 					if resourceType == "deployments" {
 						logger.Info("patching deployment")
-						_, err2 = client.ExtensionsV1beta1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+						_, err2 = client.AppsV1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
 					} else if resourceType == "daemonsets" {
 						logger.Info("patching daemonset")
-						_, err2 = client.AppsV1beta2().DaemonSets(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+						_, err2 = client.AppsV1().DaemonSets(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
 					} else if resourceType == "statefulsets" {
 						logger.Info("patching statefulset")
-						_, err2 = client.AppsV1beta2().StatefulSets(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
+						_, err2 = client.AppsV1().StatefulSets(namespace).Patch(name, types.StrategicMergePatchType, payloadBytes)
 					} else {
 						return errors.New("unexpected resource type")
 					}

@@ -1,7 +1,7 @@
 package kube
 
 import (
-	ext "k8s.io/api/extensions/v1beta1"
+	ext "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	//apps "k8s.io/api/apps/v1beta2"
 )
