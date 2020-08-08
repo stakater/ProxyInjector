@@ -111,8 +111,8 @@ File a GitHub [issue](https://github.com/stakater/ProxyInjector/issues), or send
 ### Talk to us on Slack
 Join and talk to us on the #tools-proxyinjector channel for discussing the ProxyInjector
 
-[![Join Slack](https://stakater.github.io/README/stakater-join-slack-btn.png)](https://stakater-slack.herokuapp.com/)
-[![Chat](https://stakater.github.io/README/stakater-chat-btn.png)](https://stakater.slack.com/messages/CFCP3MUR4/)
+[![Join Slack](https://stakater.github.io/README/stakater-join-slack-btn.png)](https://slack.stakater.com/)
+[![Chat](https://stakater.github.io/README/stakater-chat-btn.png)](https://stakater-community.slack.com/messages/CFCP3MUR4)
 
 ## License
 
